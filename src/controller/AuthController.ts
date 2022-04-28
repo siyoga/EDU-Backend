@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import UserService from '../services/UserService';
+import { getAuthHeader } from '../helper/auth';
+import AuthService from '../services/AuthService';
 
 import Controller, { HTTPMethods } from '../typings/Controller';
 
 export default class AuthController extends Controller {
-  path = '/';
+  path = '/auth';
   routes = [
     {
       path: '/login',
@@ -16,47 +17,73 @@ export default class AuthController extends Controller {
       method: HTTPMethods.POST,
       handler: this.handleRegister,
     },
+    {
+      path: '/logout',
+      method: HTTPMethods.POST,
+      handler: this.handleLogout,
+    },
   ];
 
   constructor() {
     super();
   }
 
-  async handleLogin(req: Request, res: Response): Promise<void> {
+  async handleLogin(request: Request, response: Response): Promise<void> {
     try {
-      const username = req.body.username;
-      const password = req.body.password;
+      const username = request.body.username;
+      const password = request.body.password;
 
-      const userService = new UserService(username, password);
-      const data = await userService.login();
-      if (data.success) {
-        super.success(res, data.data!, data.message);
-      } else {
-        super.error(res, data.message);
+      const authService = new AuthService(username, password);
+      const data = await authService.login();
+      if (!data.success) {
+        super.error(response, data.message, data.statusCode);
+        return;
       }
+
+      super.success(response, data.data!, data.message);
     } catch (e) {
       console.log(e);
-      super.error(res);
+      super.error(response);
     }
   }
 
-  async handleRegister(req: Request, res: Response): Promise<void> {
+  async handleRegister(request: Request, response: Response): Promise<void> {
     try {
-      console.log(req.body);
-      const username = req.body.username;
-      const password = req.body.password;
-      const email = req.body.email;
+      const username = request.body.username;
+      const password = request.body.password;
+      const email = request.body.email;
 
-      const userService = new UserService(username, password, email);
-      const data = await userService.register();
-      if (data.success) {
-        super.success(res, data.data!, data.message);
-      } else {
-        super.error(res, data.message, 401);
+      const authService = new AuthService(username, password, email);
+      const data = await authService.register();
+      if (!data.success) {
+        super.error(response, data.message, data.statusCode);
+        return;
       }
+
+      super.success(response, data.data!, data.message);
     } catch (e) {
       console.log(e);
-      super.error(res);
+      super.error(response);
+    }
+  }
+
+  async handleLogout(request: Request, response: Response): Promise<void> {
+    try {
+      const userId = getAuthHeader(request);
+      const username = request.body.username;
+      const password = request.body.password;
+      const email = request.body.email;
+
+      const authService = new AuthService(username, password, email, userId);
+      const data = await authService.logout();
+      if (!data.success) {
+        super.error(response, data.message, data.statusCode);
+      }
+
+      super.success(response, data.data!, data.message);
+    } catch (e) {
+      console.log(e);
+      super.error(response);
     }
   }
 }

@@ -9,4 +9,4 @@ export const postgresCredentials = {
   host: process.env.POSTGRES_HOSTNAME!,
 };
 
-export const accessToken = process.env.TOKEN!;
+export const accessToken = process.env.TOKEN_SECRET!;

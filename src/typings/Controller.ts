@@ -10,7 +10,7 @@ export enum HTTPMethods {
 interface IRoute {
   path: string;
   method: HTTPMethods;
-  handler: (req: Request, res: Response) => void | Promise<void>;
+  handler: (request: Request, response: Response) => void | Promise<void>;
 }
 
 export default abstract class Controller {

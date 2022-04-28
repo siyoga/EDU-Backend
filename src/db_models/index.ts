@@ -1,10 +1,12 @@
 import { Sequelize } from 'sequelize';
 import { postgresCredentials } from '../config';
+import { getToken, IToken, TokenModelType } from './Token';
 import { getUser, IUser, UserModelType } from './User';
 
 interface IDatabase {
   sequelize: Sequelize;
   User: UserModelType;
+  Token: TokenModelType;
 }
 
 const sequelize = new Sequelize(
@@ -18,10 +20,14 @@ const sequelize = new Sequelize(
 );
 
 const User = getUser(sequelize);
+const Token = getToken(sequelize);
+User.hasOne(Token);
+Token.belongsTo(User);
 
 const database: IDatabase = {
   sequelize,
   User,
+  Token,
 };
 
 database.sequelize
@@ -31,3 +37,4 @@ database.sequelize
 
 export default database;
 export type UserModel = IUser;
+export type TokenModel = IToken;
