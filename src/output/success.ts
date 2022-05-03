@@ -33,3 +33,15 @@ export const SuccessTokenCreated = {
   message: 'Refresh token created successfully',
   success: true,
 };
+
+export const SuccessUserEmailUpdate = {
+  message: 'Email was successfully updated',
+};
+
+export const SuccessUsernameUpdate = {
+  message: 'Username was successfully updated',
+};
+
+export const SuccessUserPasswordUpdate = {
+  message: 'Password was successfully updated',
+};
