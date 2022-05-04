@@ -1,9 +1,10 @@
+import { Op } from 'sequelize';
 import database from '../db_models';
 import { ICourse } from '../db_models/Course';
 import {
   CourseAlreadyExist,
-  CourseCreateBadRequest,
   CourseNotFound,
+  RequireFieldNotProvided,
   ServerError,
 } from '../output/errors';
 import {
@@ -31,11 +32,11 @@ export default class CourseService {
   public async create(): Promise<CourseData> {
     try {
       if (
-        this.name === undefined &&
-        this.description === undefined &&
+        this.name === undefined ||
+        this.description === undefined ||
         this.author === undefined
       ) {
-        return CourseCreateBadRequest;
+        return RequireFieldNotProvided;
       }
 
       const foundCourse = await database.Course.findOne({
@@ -84,7 +85,7 @@ export default class CourseService {
       if (this.description !== undefined) {
         foundCourse.description = this.description;
       }
-      foundCourse.save();
+      await foundCourse.save();
 
       const data = this.prepareResponse(foundCourse);
       return {
@@ -99,7 +100,7 @@ export default class CourseService {
     }
   }
 
-  public async get(id: string): Promise<CourseData> {
+  public async getById(id: string): Promise<CourseData> {
     try {
       const foundCourse = await database.Course.findOne({
         where: {
@@ -130,6 +131,39 @@ export default class CourseService {
       const foundCourses = await database.Course.findAll({
         where: {
           author: author,
+        },
+      });
+
+      if (foundCourses === null) {
+        return CourseNotFound;
+      }
+
+      foundCourses.forEach((element) => {
+        data.push(this.prepareResponse(element));
+      });
+
+      return {
+        statusCode: 200,
+        message: SuccessCourseGet.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerError;
+    }
+  }
+
+  public async getByName(name: string): Promise<CourseData> {
+    try {
+      const data: ISafeCourseData[] = [];
+      const foundCourses = await database.Course.findAll({
+        where: {
+          name: {
+            [Op.or]: {
+              [Op.like]: `%${name}%`,
+            },
+          },
         },
       });
 
@@ -189,7 +223,7 @@ export default class CourseService {
         return CourseNotFound;
       }
 
-      foundCourse.studentCount++;
+      foundCourse.studentsCount++;
       foundCourse.save();
 
       const data = this.prepareResponse(foundCourse);
@@ -211,7 +245,7 @@ export default class CourseService {
       id: course.id,
       name: course.name,
       description: course.description,
-      studentCount: course.studentCount,
+      studentCount: course.studentsCount,
       author: course.author,
     };
 

@@ -12,6 +12,7 @@ import {
   NoSuchUser,
   ServerError,
   UserAlreadyExist,
+  RequireFieldNotProvided,
 } from '../output/errors';
 import {
   SuccessLogin,
@@ -33,6 +34,7 @@ export default class AuthService {
   constructor(
     public username: string,
     public password: string,
+    public type?: string,
     public email?: string,
     public userId?: string
   ) {}
@@ -99,13 +101,20 @@ export default class AuthService {
       const existUser = await database.User.findOne({
         where: { username: this.username },
       });
+
       if (existUser !== null) {
         return UserAlreadyExist;
       }
 
+      if (this.email === undefined || this.type === undefined) {
+        return RequireFieldNotProvided;
+      }
+
       const hashedPassword = await argon2.hash(this.password);
+
       await database.User.create({
         email: this.email,
+        type: this.type.toUpperCase(),
         username: this.username,
         password: hashedPassword,
       });

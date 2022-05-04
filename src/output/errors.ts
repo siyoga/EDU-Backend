@@ -56,8 +56,8 @@ export const CourseAlreadyExist = {
   success: false,
 };
 
-export const CourseCreateBadRequest = {
+export const RequireFieldNotProvided = {
   statusCode: 400,
-  message: 'Parameters for new course not provided',
+  message: "Email doesn't provided.",
   success: false,
 };

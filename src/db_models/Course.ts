@@ -1,11 +1,11 @@
-import { BuildOptions, DataTypes, Model, Sequelize } from 'sequelize/types';
+import { BuildOptions, DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface ICourse extends Model {
   readonly id: string;
   name: string;
   description: string;
   author: string;
-  studentCount: number;
+  studentsCount: number;
 }
 
 export type CourseModelType = typeof Model & {
@@ -36,7 +36,7 @@ export function getCourse(sequelize: Sequelize): CourseModelType {
     },
 
     studentsCount: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       defaultValue: 0,
     },
   });

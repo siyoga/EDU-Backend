@@ -41,6 +41,11 @@ export function getUser(sequelize: Sequelize): UserModelType {
           },
         },
       },
+
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {
       freezeTableName: true,

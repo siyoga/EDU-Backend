@@ -4,7 +4,12 @@ import { accessToken } from '../config';
 import database from '../db_models';
 
 import { IUser } from '../db_models/User';
-import { NoSuchUser, ServerError, InvalidPassword } from '../output/errors';
+import {
+  NoSuchUser,
+  ServerError,
+  InvalidPassword,
+  RequireFieldNotProvided,
+} from '../output/errors';
 import {
   SuccessGet,
   SuccessUserEmailUpdate,
@@ -60,6 +65,10 @@ export default class UserService {
         return NoSuchUser;
       }
 
+      if (newEmail === undefined) {
+        return RequireFieldNotProvided;
+      }
+
       existUser.email = newEmail;
       await existUser.save();
 
@@ -85,6 +94,10 @@ export default class UserService {
 
       if (existUser === null) {
         return NoSuchUser;
+      }
+
+      if (newUsername === undefined) {
+        return RequireFieldNotProvided;
       }
 
       existUser.username = newUsername;
@@ -124,6 +137,10 @@ export default class UserService {
 
       if (!passwordValid) {
         return InvalidPassword;
+      }
+
+      if (newPassword === undefined) {
+        return RequireFieldNotProvided;
       }
 
       const hashedPassword = await argon2.hash(newPassword);

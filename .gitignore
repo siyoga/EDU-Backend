@@ -3,3 +3,5 @@ src/settings.env
 dist
 config/
 yarn.lock
+src/services/VideoService.ts
+src/controller/VideoController.ts
