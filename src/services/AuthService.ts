@@ -6,12 +6,13 @@ import * as uuid from 'uuid';
 
 import { IUser } from '../db_models/User';
 import {
-  ExistTokenNotFound,
+  TokenNotFound,
   InvalidPassword,
   LoginToAccount,
   NoSuchUser,
   ServerError,
   UserAlreadyExist,
+  RequireFieldNotProvided,
 } from '../output/errors';
 import {
   SuccessLogin,
@@ -33,6 +34,7 @@ export default class AuthService {
   constructor(
     public username: string,
     public password: string,
+    public type?: string,
     public email?: string,
     public userId?: string
   ) {}
@@ -59,9 +61,9 @@ export default class AuthService {
       const data = await this.generateUserData(loggedInUser!);
 
       return {
-        statusCode: SuccessLogin.statusCode,
+        statusCode: 200,
         message: SuccessLogin.message,
-        success: SuccessLogin.success,
+        success: true,
         data: data,
       };
     } catch (e) {
@@ -84,9 +86,9 @@ export default class AuthService {
       });
 
       return {
-        statusCode: SuccessLogout.statusCode,
+        statusCode: 200,
         message: SuccessLogout.message,
-        success: SuccessLogout.success,
+        success: true,
       };
     } catch (e) {
       console.log(e);
@@ -99,21 +101,28 @@ export default class AuthService {
       const existUser = await database.User.findOne({
         where: { username: this.username },
       });
+
       if (existUser !== null) {
         return UserAlreadyExist;
       }
 
+      if (this.email === undefined || this.type === undefined) {
+        return RequireFieldNotProvided;
+      }
+
       const hashedPassword = await argon2.hash(this.password);
+
       await database.User.create({
         email: this.email,
+        type: this.type.toUpperCase(),
         username: this.username,
         password: hashedPassword,
       });
 
       return {
-        statusCode: SuccessRegister.statusCode,
+        statusCode: 200,
         message: SuccessRegister.message,
-        success: SuccessRegister.success,
+        success: true,
       };
     } catch (e) {
       console.log(e);
@@ -135,7 +144,7 @@ export default class AuthService {
       });
 
       if (dbToken === null) {
-        return ExistTokenNotFound;
+        return TokenNotFound;
       }
 
       dbToken.refreshToken = uuid.v4();
@@ -143,9 +152,9 @@ export default class AuthService {
 
       const data = this.generateTokenPair(dbToken.userId);
       return {
-        statusCode: SuccessTokenRefresh.statusCode,
+        statusCode: 200,
         message: SuccessTokenRefresh.message,
-        success: SuccessTokenRefresh.success,
+        success: true,
         data: data,
       };
     } catch (e) {

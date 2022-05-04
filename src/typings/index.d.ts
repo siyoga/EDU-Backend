@@ -20,3 +20,11 @@ export interface ISafeTokenData {
 export interface ICryptToken {
   userId: string;
 }
+
+export interface ISafeCourseData {
+  id: string;
+  name: string;
+  description: string;
+  studentCount: number;
+  author: string;
+}

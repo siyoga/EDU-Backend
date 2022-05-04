@@ -4,8 +4,18 @@ import { accessToken } from '../config';
 import database from '../db_models';
 
 import { IUser } from '../db_models/User';
-import { NoSuchUser, ServerError, InvalidPassword } from '../output/errors';
-import { SuccessGet, SuccessUserEmailUpdate, SuccessUserPasswordUpdate, SuccessUsernameUpdate } from '../output/success';
+import {
+  NoSuchUser,
+  ServerError,
+  InvalidPassword,
+  RequireFieldNotProvided,
+} from '../output/errors';
+import {
+  SuccessGet,
+  SuccessUserEmailUpdate,
+  SuccessUserPasswordUpdate,
+  SuccessUsernameUpdate,
+} from '../output/success';
 import { ICryptToken, ISafeToken, ISafeUserData } from '../typings';
 
 import * as argon2 from 'argon2';
@@ -33,9 +43,9 @@ export default class UserService {
 
       const data = this.prepareResponse(existUser);
       return {
-        statusCode: SuccessGet.statusCode,
+        statusCode: 200,
         message: SuccessGet.message,
-        success: SuccessGet.success,
+        success: true,
         data: data,
       };
     } catch (e) {
@@ -55,8 +65,12 @@ export default class UserService {
         return NoSuchUser;
       }
 
+      if (newEmail === undefined) {
+        return RequireFieldNotProvided;
+      }
+
       existUser.email = newEmail;
-      await existUser.save();      
+      await existUser.save();
 
       const data = this.prepareResponse(existUser);
       return {
@@ -77,9 +91,13 @@ export default class UserService {
       const existUser = await database.User.findOne({
         where: { id: decodedUserId.userId },
       });
-      
+
       if (existUser === null) {
         return NoSuchUser;
+      }
+
+      if (newUsername === undefined) {
+        return RequireFieldNotProvided;
       }
 
       existUser.username = newUsername;
@@ -98,13 +116,16 @@ export default class UserService {
     }
   }
 
-  public async updateUserPassword(oldPassword: string, newPassword: string): Promise<UserData> {
+  public async updateUserPassword(
+    oldPassword: string,
+    newPassword: string
+  ): Promise<UserData> {
     try {
       const decodedUserId = jwt.verify(this.userId, accessToken) as ICryptToken;
       const existUser = await database.User.findOne({
         where: { id: decodedUserId.userId },
       });
-      
+
       if (existUser === null) {
         return NoSuchUser;
       }
@@ -116,6 +137,10 @@ export default class UserService {
 
       if (!passwordValid) {
         return InvalidPassword;
+      }
+
+      if (newPassword === undefined) {
+        return RequireFieldNotProvided;
       }
 
       const hashedPassword = await argon2.hash(newPassword);

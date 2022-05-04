@@ -17,7 +17,7 @@ export default class UserController extends Controller {
     {
       path: '/updateUserEmail',
       method: HTTPMethods.POST,
-      handler: this.handleUpdateUserEmail,
+      handler: this.handleUpdateEmail,
     },
     {
       path: '/updateUsername',
@@ -27,7 +27,7 @@ export default class UserController extends Controller {
     {
       path: '/updateUserPassword',
       method: HTTPMethods.POST,
-      handler: this.handleUpdateUserPassword,
+      handler: this.handleUpdatePassword,
     },
   ];
 
@@ -53,7 +53,7 @@ export default class UserController extends Controller {
     super.success(response, data.data!, data.message);
   }
 
-  async handleUpdateUserEmail(request: Request, response: Response): Promise<void> {
+  async handleUpdateEmail(request: Request, response: Response): Promise<void> {
     const userId = getAuthHeader(request);
     const email = request.body.newEmail;
 
@@ -74,7 +74,10 @@ export default class UserController extends Controller {
     return;
   }
 
-  async handleUpdateUsername(request: Request, response: Response): Promise<void> {
+  async handleUpdateUsername(
+    request: Request,
+    response: Response
+  ): Promise<void> {
     const userId = getAuthHeader(request);
     const username = request.body.username;
 
@@ -95,7 +98,10 @@ export default class UserController extends Controller {
     return;
   }
 
-  async handleUpdateUserPassword(request: Request, response: Response): Promise<void> {
+  async handleUpdatePassword(
+    request: Request,
+    response: Response
+  ): Promise<void> {
     const userId = getAuthHeader(request);
     const oldPassword = request.body.oldPassword;
     const newPassword = request.body.newPassword;

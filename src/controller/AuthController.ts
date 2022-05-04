@@ -52,8 +52,9 @@ export default class AuthController extends Controller {
       const username = request.body.username;
       const password = request.body.password;
       const email = request.body.email;
+      const type = request.body.type;
 
-      const authService = new AuthService(username, password, email);
+      const authService = new AuthService(username, password, type, email);
       const data = await authService.register();
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
@@ -73,8 +74,15 @@ export default class AuthController extends Controller {
       const username = request.body.username;
       const password = request.body.password;
       const email = request.body.email;
+      const type = request.body.type;
 
-      const authService = new AuthService(username, password, email, userId);
+      const authService = new AuthService(
+        username,
+        password,
+        type,
+        email,
+        userId
+      );
       const data = await authService.logout();
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
