@@ -6,7 +6,7 @@ import * as uuid from 'uuid';
 
 import { IUser } from '../db_models/User';
 import {
-  ExistTokenNotFound,
+  TokenNotFound,
   InvalidPassword,
   LoginToAccount,
   NoSuchUser,
@@ -59,9 +59,9 @@ export default class AuthService {
       const data = await this.generateUserData(loggedInUser!);
 
       return {
-        statusCode: SuccessLogin.statusCode,
+        statusCode: 200,
         message: SuccessLogin.message,
-        success: SuccessLogin.success,
+        success: true,
         data: data,
       };
     } catch (e) {
@@ -84,9 +84,9 @@ export default class AuthService {
       });
 
       return {
-        statusCode: SuccessLogout.statusCode,
+        statusCode: 200,
         message: SuccessLogout.message,
-        success: SuccessLogout.success,
+        success: true,
       };
     } catch (e) {
       console.log(e);
@@ -111,9 +111,9 @@ export default class AuthService {
       });
 
       return {
-        statusCode: SuccessRegister.statusCode,
+        statusCode: 200,
         message: SuccessRegister.message,
-        success: SuccessRegister.success,
+        success: true,
       };
     } catch (e) {
       console.log(e);
@@ -135,7 +135,7 @@ export default class AuthService {
       });
 
       if (dbToken === null) {
-        return ExistTokenNotFound;
+        return TokenNotFound;
       }
 
       dbToken.refreshToken = uuid.v4();
@@ -143,9 +143,9 @@ export default class AuthService {
 
       const data = this.generateTokenPair(dbToken.userId);
       return {
-        statusCode: SuccessTokenRefresh.statusCode,
+        statusCode: 200,
         message: SuccessTokenRefresh.message,
-        success: SuccessTokenRefresh.success,
+        success: true,
         data: data,
       };
     } catch (e) {

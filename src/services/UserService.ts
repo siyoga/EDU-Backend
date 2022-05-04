@@ -5,7 +5,7 @@ import database from '../db_models';
 
 import { IUser } from '../db_models/User';
 import { NoSuchUser, ServerError } from '../output/errors';
-import { SuccessGet } from '../output/success';
+import { SuccessUserGet } from '../output/success';
 import { ICryptToken, ISafeToken, ISafeUserData } from '../typings';
 
 interface UserData {
@@ -31,9 +31,9 @@ export default class UserService {
 
       const data = this.prepareResponse(existUser);
       return {
-        statusCode: SuccessGet.statusCode,
-        message: SuccessGet.message,
-        success: SuccessGet.success,
+        statusCode: 200,
+        message: SuccessUserGet.message,
+        success: true,
         data: data,
       };
     } catch (e) {

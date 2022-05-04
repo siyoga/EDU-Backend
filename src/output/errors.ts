@@ -32,7 +32,7 @@ export const UserAlreadyExist = {
   success: false,
 };
 
-export const ExistTokenNotFound = {
+export const TokenNotFound = {
   statusCode: 404,
   message: "Refresh token isn't already exist.",
   success: false,
@@ -41,5 +41,23 @@ export const ExistTokenNotFound = {
 export const LoginToAccount = {
   statusCode: 401,
   message: 'Log in to your account.',
+  success: false,
+};
+
+export const CourseNotFound = {
+  statusCode: 404,
+  message: "Course doesn't exist.",
+  success: false,
+};
+
+export const CourseAlreadyExist = {
+  statusCode: 409,
+  message: 'Similar course already exist',
+  success: false,
+};
+
+export const CourseCreateBadRequest = {
+  statusCode: 400,
+  message: 'Parameters for new course not provided',
   success: false,
 };
