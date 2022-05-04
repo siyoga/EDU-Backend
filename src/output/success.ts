@@ -10,7 +10,7 @@ export const SuccessRegister = {
   message: 'Successfully register.',
 };
 
-export const SuccessUserGet = {
+export const SuccessGet = {
   message: 'User data returned successfully',
 };
 
@@ -36,4 +36,16 @@ export const SuccessCourseGet = {
 
 export const SuccessCourseDelete = {
   message: 'Course deleted successfully',
+};
+
+export const SuccessUserEmailUpdate = {
+  message: 'Email was successfully updated',
+};
+
+export const SuccessUsernameUpdate = {
+  message: 'Username was successfully updated',
+};
+
+export const SuccessUserPasswordUpdate = {
+  message: 'Password was successfully updated',
 };

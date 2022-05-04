@@ -2,9 +2,9 @@ import { BuildOptions, DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface IUser extends Model {
   readonly id: string;
-  readonly username: string;
-  readonly password: string;
-  readonly email: string;
+  username: string;
+  password: string;
+  email: string;
 }
 
 export type UserModelType = typeof Model & {
