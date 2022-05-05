@@ -13,31 +13,37 @@ export type CourseModelType = typeof Model & {
 };
 
 export function getCourse(sequelize: Sequelize): CourseModelType {
-  return <CourseModelType>sequelize.define('course', {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
+  return <CourseModelType>sequelize.define(
+    'course',
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
 
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
 
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
 
-    author: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+      author: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
 
-    studentsCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+      studentsCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
-  });
+    {
+      freezeTableName: true,
+    }
+  );
 }
