@@ -49,3 +49,7 @@ export const SuccessUsernameUpdate = {
 export const SuccessUserPasswordUpdate = {
   message: 'Password was successfully updated',
 };
+
+export const SuccessVideoUpload = {
+  message: 'Video uploaded successfully.',
+};

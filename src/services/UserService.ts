@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { accessToken } from '../config';
+import { accessToken } from '../../config';
 
 import database from '../db_models';
 

@@ -1,9 +1,10 @@
-import { BuildOptions, DataTypes, Model, Sequelize } from 'sequelize/types';
+import { BuildOptions, DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface IVideo extends Model {
   readonly id: string;
   name: string;
   path: string;
+  courseId: string;
 }
 
 export type VideoModelType = typeof Model & {
@@ -12,7 +13,7 @@ export type VideoModelType = typeof Model & {
 
 export function getVideo(sequelize: Sequelize): VideoModelType {
   return <VideoModelType>sequelize.define(
-    'course',
+    'videos',
     {
       id: {
         type: DataTypes.UUID,

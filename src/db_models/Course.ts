@@ -14,7 +14,7 @@ export type CourseModelType = typeof Model & {
 
 export function getCourse(sequelize: Sequelize): CourseModelType {
   return <CourseModelType>sequelize.define(
-    'course',
+    'courses',
     {
       id: {
         type: DataTypes.UUID,

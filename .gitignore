@@ -1,5 +1,5 @@
 node_modules
-src/settings.env
+settings.env
 dist
 config/
 yarn.lock

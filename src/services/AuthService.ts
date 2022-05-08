@@ -21,7 +21,7 @@ import {
   SuccessTokenRefresh,
 } from '../output/success';
 import { ICryptToken, ISafeToken, ISafeUserData } from '../typings/index';
-import { accessToken } from '../config';
+import { accessToken } from '../../config';
 
 interface AuthData {
   statusCode: number;

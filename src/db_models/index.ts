@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import { postgresConfig } from '../config';
+import { postgresConfig } from '../../config';
 import { getToken, IToken, TokenModelType } from './Token';
 import { getUser, IUser, UserModelType } from './User';
 import { getCourse, ICourse, CourseModelType } from './Course';
@@ -30,8 +30,8 @@ const Video = getVideo(sequelize);
 User.hasOne(Token);
 Token.belongsTo(User);
 
-Video.hasOne(Course);
-Course.belongsTo(Video);
+Course.hasOne(Video);
+Video.belongsTo(Course);
 
 const database: IDatabase = {
   sequelize,

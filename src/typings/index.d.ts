@@ -28,3 +28,9 @@ export interface ISafeCourseData {
   studentCount: number;
   author: string;
 }
+
+export interface ISafeVideoData {
+  name: string;
+  path: string;
+  courseId: string;
+}

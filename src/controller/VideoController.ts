@@ -1,10 +1,9 @@
-import multer from 'multer';
+import { Request, Response } from 'express';
 
-import { Request } from 'express';
-import Controller, { HTTPMethods } from "../typings/Controller";
-
-type DestinationCallback = (error: Error | null, destination: string) => void;
-type FilenameCallback = (error: Error | null, filename: string) => void;
+import Controller, { HTTPMethods } from '../typings/Controller';
+import VideoService from '../services/VideoService';
+import { FilesNotProvided } from '../output/errors';
+import fileUpload from 'express-fileupload';
 
 export default class VideoController extends Controller {
   path = '/video';
@@ -12,23 +11,26 @@ export default class VideoController extends Controller {
     {
       path: '/upload',
       method: HTTPMethods.POST,
-      handler: 
-    }
-  ];
-
-  private storage = multer.diskStorage({
-    destination: (request: Request, file: Express.Multer.File, callback: DestinationCallback): void => {
-      callback(null, 'public/videos');
+      handler: this.handleUpload,
     },
-  
-    filename: (request: Request, file: Express.Multer.File, callback: FilenameCallback): void => {
-      callback(null, file.originalname);
-    }
-  })
+  ];
 
   constructor() {
     super();
   }
 
-  
-} 
+  async handleUpload(request: Request, response: Response): Promise<void> {
+    const video = request.files?.video as fileUpload.UploadedFile | undefined;
+    const courseId = request.body.courseId;
+
+    const videoService = new VideoService(video);
+    const data = await videoService.upload(courseId);
+
+    if (!data.success) {
+      super.error(response, data.message, data.statusCode);
+      return;
+    }
+
+    super.success(response, data, data.message);
+  }
+}
