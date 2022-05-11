@@ -3,7 +3,7 @@ import * as argon2 from 'argon2';
 import database from '../db_models';
 
 import { IUser } from '../db_models/User';
-import { NoSuchUser, ServerError, InvalidPassword } from '../output/errors';
+import { DatabaseIssues, ServerIssues } from '../output/errors';
 import {
   SuccessGet,
   SuccessUserEmailUpdate,
@@ -27,7 +27,7 @@ export default class UserService {
       });
 
       if (existUser === null) {
-        return NoSuchUser;
+        return DatabaseIssues.NoSuchUser;
       }
 
       const data = this.prepareResponse(existUser);
@@ -39,7 +39,7 @@ export default class UserService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -53,7 +53,7 @@ export default class UserService {
       });
 
       if (existUser === null) {
-        return NoSuchUser;
+        return DatabaseIssues.NoSuchUser;
       }
 
       existUser.email = newEmail;
@@ -68,7 +68,7 @@ export default class UserService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -82,7 +82,7 @@ export default class UserService {
       });
 
       if (existUser === null) {
-        return NoSuchUser;
+        return DatabaseIssues.NoSuchUser;
       }
 
       existUser.username = newUsername;
@@ -97,7 +97,7 @@ export default class UserService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -112,7 +112,7 @@ export default class UserService {
       });
 
       if (existUser === null) {
-        return NoSuchUser;
+        return DatabaseIssues.NoSuchUser;
       }
 
       const passwordValid = await argon2.verify(
@@ -121,7 +121,7 @@ export default class UserService {
       );
 
       if (!passwordValid) {
-        return InvalidPassword;
+        return DatabaseIssues.InvalidPassword;
       }
 
       const hashedPassword = await argon2.hash(newPassword);
@@ -137,7 +137,7 @@ export default class UserService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 

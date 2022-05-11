@@ -4,13 +4,7 @@ import database from '../db_models';
 import * as uuid from 'uuid';
 
 import { IUser } from '../db_models/User';
-import {
-  TokenNotFound,
-  InvalidPassword,
-  NoSuchUser,
-  ServerError,
-  UserAlreadyExist,
-} from '../output/errors';
+import { DatabaseIssues, ServerIssues } from '../output/errors';
 import {
   SuccessLogin,
   SuccessLogout,
@@ -35,7 +29,7 @@ export default class AuthService {
       });
 
       if (loggedInUser === null) {
-        return NoSuchUser;
+        return DatabaseIssues.NoSuchUser;
       }
 
       const passwordValid = await argon2.verify(
@@ -44,7 +38,7 @@ export default class AuthService {
       );
 
       if (!passwordValid) {
-        return InvalidPassword;
+        return DatabaseIssues.InvalidPassword;
       }
 
       const data = await this.generateUserData(loggedInUser!);
@@ -57,7 +51,7 @@ export default class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -77,7 +71,7 @@ export default class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -93,7 +87,7 @@ export default class AuthService {
       });
 
       if (existUser !== null) {
-        return UserAlreadyExist;
+        return DatabaseIssues.UserAlreadyExist;
       }
 
       const hashedPassword = await argon2.hash(password);
@@ -112,7 +106,7 @@ export default class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -125,7 +119,7 @@ export default class AuthService {
       });
 
       if (dbToken === null) {
-        return TokenNotFound;
+        return DatabaseIssues.TokenNotFound;
       }
 
       dbToken.refreshToken = uuid.v4();
@@ -140,7 +134,7 @@ export default class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 

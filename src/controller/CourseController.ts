@@ -6,11 +6,7 @@ import Controller from '../typings/Controller';
 import { getAuthHeader } from '../helper/auth';
 import { HTTPMethods } from '../typings/Controller';
 
-import {
-  DoNotHavePermission,
-  LoginToAccount,
-  RequireFieldNotProvided,
-} from '../output/errors';
+import { ServerIssues } from '../output/errors';
 
 export default class CourseController extends Controller {
   path = '/course';
@@ -76,16 +72,16 @@ export default class CourseController extends Controller {
     ) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
     }
 
     if (userType !== 'TEACHER') {
       super.error(
         response,
-        DoNotHavePermission.message,
-        DoNotHavePermission.statusCode
+        ServerIssues.DoNotHavePermission.message,
+        ServerIssues.DoNotHavePermission.statusCode
       );
       return;
     }
@@ -109,8 +105,8 @@ export default class CourseController extends Controller {
     if (courseId === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -135,8 +131,8 @@ export default class CourseController extends Controller {
     if (courseId === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -158,8 +154,8 @@ export default class CourseController extends Controller {
     if (author === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -181,8 +177,8 @@ export default class CourseController extends Controller {
     if (name === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -204,8 +200,8 @@ export default class CourseController extends Controller {
     if (courseId === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -227,8 +223,8 @@ export default class CourseController extends Controller {
     if (courseId === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
