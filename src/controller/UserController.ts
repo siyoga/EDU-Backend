@@ -1,10 +1,11 @@
 import { Response, Request } from 'express';
 
-import { HTTPMethods } from '../typings/Controller';
-import { LoginToAccount } from '../output/errors';
 import Controller from '../typings/Controller';
 import UserService from '../services/UserService';
-import { getAuthHeader } from '../helper/auth';
+
+import { HTTPMethods } from '../typings/Controller';
+import { LoginToAccount, RequireFieldNotProvided } from '../output/errors';
+import { decodeToken, getAuthHeader } from '../helper/auth';
 
 export default class UserController extends Controller {
   path = '/user';
@@ -43,8 +44,9 @@ export default class UserController extends Controller {
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.get();
+    const decodedUserId = decodeToken(userId);
+    const userService = new UserService();
+    const data = await userService.get(decodedUserId);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -55,15 +57,25 @@ export default class UserController extends Controller {
 
   async handleUpdateEmail(request: Request, response: Response): Promise<void> {
     const userId = getAuthHeader(request);
-    const email = request.body.newEmail;
+    const newEmail = request.body.newEmail;
 
     if (userId === undefined) {
       super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.updateUserEmail(email);
+    if (newEmail === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const decodedUserId = decodeToken(userId);
+    const userService = new UserService();
+    const data = await userService.updateUserEmail(decodedUserId, newEmail);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -79,15 +91,25 @@ export default class UserController extends Controller {
     response: Response
   ): Promise<void> {
     const userId = getAuthHeader(request);
-    const username = request.body.username;
+    const newUsername = request.body.newUsername;
 
     if (userId === undefined) {
       super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.updateUsername(username);
+    if (newUsername === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const decodedUserId = decodeToken(userId);
+    const userService = new UserService();
+    const data = await userService.updateUsername(decodedUserId, newUsername);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -111,8 +133,22 @@ export default class UserController extends Controller {
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.updateUserPassword(oldPassword, newPassword);
+    if (oldPassword === undefined || newPassword === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const decodedUserId = decodeToken(userId);
+    const userService = new UserService();
+    const data = await userService.updateUserPassword(
+      decodedUserId,
+      oldPassword,
+      newPassword
+    );
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);

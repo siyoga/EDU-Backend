@@ -1,40 +1,29 @@
-import jwt from 'jsonwebtoken';
-import { accessToken } from '../config';
+import * as argon2 from 'argon2';
 
 import database from '../db_models';
 
 import { IUser } from '../db_models/User';
-import {
-  NoSuchUser,
-  ServerError,
-  InvalidPassword,
-  RequireFieldNotProvided,
-} from '../output/errors';
+import { NoSuchUser, ServerError, InvalidPassword } from '../output/errors';
 import {
   SuccessGet,
   SuccessUserEmailUpdate,
   SuccessUserPasswordUpdate,
   SuccessUsernameUpdate,
 } from '../output/success';
-import { ICryptToken, ISafeToken, ISafeUserData } from '../typings';
-
-import * as argon2 from 'argon2';
+import { ISafeUserData } from '../typings';
 
 interface UserData {
   statusCode: number;
   message: string;
   success: boolean;
-  data?: object;
+  data?: ISafeUserData;
 }
 
 export default class UserService {
-  constructor(public userId: string) {}
-
-  public async get(): Promise<UserData> {
+  public async get(userId: string): Promise<UserData> {
     try {
-      const decodedUserId = jwt.verify(this.userId, accessToken) as ICryptToken;
       const existUser = await database.User.findOne({
-        where: { id: decodedUserId.userId },
+        where: { id: userId },
       });
 
       if (existUser === null) {
@@ -54,19 +43,17 @@ export default class UserService {
     }
   }
 
-  public async updateUserEmail(newEmail: string): Promise<UserData> {
+  public async updateUserEmail(
+    userId: string,
+    newEmail: string
+  ): Promise<UserData> {
     try {
-      const decodedUserId = jwt.verify(this.userId, accessToken) as ICryptToken;
       const existUser = await database.User.findOne({
-        where: { id: decodedUserId.userId },
+        where: { id: userId },
       });
 
       if (existUser === null) {
         return NoSuchUser;
-      }
-
-      if (newEmail === undefined) {
-        return RequireFieldNotProvided;
       }
 
       existUser.email = newEmail;
@@ -85,19 +72,17 @@ export default class UserService {
     }
   }
 
-  public async updateUsername(newUsername: string): Promise<UserData> {
+  public async updateUsername(
+    userId: string,
+    newUsername: string
+  ): Promise<UserData> {
     try {
-      const decodedUserId = jwt.verify(this.userId, accessToken) as ICryptToken;
       const existUser = await database.User.findOne({
-        where: { id: decodedUserId.userId },
+        where: { id: userId },
       });
 
       if (existUser === null) {
         return NoSuchUser;
-      }
-
-      if (newUsername === undefined) {
-        return RequireFieldNotProvided;
       }
 
       existUser.username = newUsername;
@@ -117,13 +102,13 @@ export default class UserService {
   }
 
   public async updateUserPassword(
+    userId: string,
     oldPassword: string,
     newPassword: string
   ): Promise<UserData> {
     try {
-      const decodedUserId = jwt.verify(this.userId, accessToken) as ICryptToken;
       const existUser = await database.User.findOne({
-        where: { id: decodedUserId.userId },
+        where: { id: userId },
       });
 
       if (existUser === null) {
@@ -137,10 +122,6 @@ export default class UserService {
 
       if (!passwordValid) {
         return InvalidPassword;
-      }
-
-      if (newPassword === undefined) {
-        return RequireFieldNotProvided;
       }
 
       const hashedPassword = await argon2.hash(newPassword);
@@ -165,6 +146,7 @@ export default class UserService {
       user: {
         username: user.username,
         email: user.email!,
+        type: user.type,
       },
     };
 

@@ -1,6 +1,7 @@
 export interface ISafeUser {
   username: string;
   email: string;
+  type: string;
 }
 
 export interface ISafeUserData {
@@ -27,4 +28,11 @@ export interface ISafeCourseData {
   description: string;
   studentCount: number;
   author: string;
+}
+
+export interface ISafeVideoData {
+  name: string;
+  path: string;
+  lessonNumber: number;
+  courseId: string;
 }

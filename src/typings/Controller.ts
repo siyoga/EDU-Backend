@@ -1,5 +1,7 @@
-import { MethodErrors } from '../output/errors';
+import fs from 'fs';
 import { Request, Response, Router } from 'express';
+
+import { MethodErrors } from '../output/errors';
 
 export enum HTTPMethods {
   POST = 'post',
@@ -31,19 +33,32 @@ export default abstract class Controller {
     return this.router;
   };
 
-  protected success(res: Response, data: object, message?: string): Response {
-    return res.status(200).send({
+  protected success(
+    response: Response,
+    data: object,
+    message?: string
+  ): Response {
+    return response.status(200).send({
       message: message || 'Success',
       data: data,
     });
   }
 
+  protected successStream(
+    response: Response,
+    headers: any,
+    video: fs.ReadStream
+  ): Response {
+    response.writeHead(206, headers);
+    return video.pipe(response);
+  }
+
   protected error(
-    res: Response,
+    response: Response,
     message?: string,
     statusCode?: number
   ): Response {
-    return res.status(statusCode!).send({
+    return response.status(statusCode!).send({
       message: message || 'Internal Server Error',
     });
   }

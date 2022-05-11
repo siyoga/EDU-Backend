@@ -4,7 +4,6 @@ import { ICourse } from '../db_models/Course';
 import {
   CourseAlreadyExist,
   CourseNotFound,
-  RequireFieldNotProvided,
   ServerError,
 } from '../output/errors';
 import {
@@ -19,28 +18,18 @@ interface CourseData {
   statusCode: number;
   message: string;
   success: boolean;
-  data?: object;
+  data?: ISafeCourseData | ISafeCourseData[];
 }
 
 export default class CourseService {
-  constructor(
-    public name?: string,
-    public description?: string,
-    public author?: string
-  ) {}
-
-  public async create(): Promise<CourseData> {
+  public async create(
+    name: string,
+    description: string,
+    author: string
+  ): Promise<CourseData> {
     try {
-      if (
-        this.name === undefined ||
-        this.description === undefined ||
-        this.author === undefined
-      ) {
-        return RequireFieldNotProvided;
-      }
-
       const foundCourse = await database.Course.findOne({
-        where: { author: this.author, name: this.name },
+        where: { author: author, name: name },
       });
 
       if (foundCourse !== null) {
@@ -48,9 +37,9 @@ export default class CourseService {
       }
 
       const createdCourse = await database.Course.create({
-        name: this.name,
-        description: this.description,
-        author: this.author,
+        name: name,
+        description: description,
+        author: author,
       });
 
       const data = this.prepareResponse(createdCourse);
@@ -66,11 +55,15 @@ export default class CourseService {
     }
   }
 
-  public async update(id: string): Promise<CourseData> {
+  public async update(
+    courseId: string,
+    newName?: string,
+    newDescription?: string
+  ): Promise<CourseData> {
     try {
       const foundCourse = await database.Course.findOne({
         where: {
-          id: id,
+          id: courseId,
         },
       });
 
@@ -78,13 +71,14 @@ export default class CourseService {
         return CourseNotFound;
       }
 
-      if (this.name !== undefined) {
-        foundCourse.name = this.name;
+      if (newName !== undefined) {
+        foundCourse.name = newName;
       }
 
-      if (this.description !== undefined) {
-        foundCourse.description = this.description;
+      if (newDescription !== undefined) {
+        foundCourse.description = newDescription;
       }
+
       await foundCourse.save();
 
       const data = this.prepareResponse(foundCourse);
@@ -100,11 +94,11 @@ export default class CourseService {
     }
   }
 
-  public async getById(id: string): Promise<CourseData> {
+  public async getByCourseId(courseId: string): Promise<CourseData> {
     try {
       const foundCourse = await database.Course.findOne({
         where: {
-          id: id,
+          id: courseId,
         },
       });
 
@@ -199,7 +193,7 @@ export default class CourseService {
         return CourseNotFound;
       }
 
-      foundCourse.destroy();
+      await foundCourse.destroy();
       return {
         statusCode: 200,
         message: SuccessCourseDelete.message,
@@ -224,7 +218,7 @@ export default class CourseService {
       }
 
       foundCourse.studentsCount++;
-      foundCourse.save();
+      await foundCourse.save();
 
       const data = this.prepareResponse(foundCourse);
 

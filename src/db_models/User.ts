@@ -5,6 +5,7 @@ export interface IUser extends Model {
   username: string;
   password: string;
   email: string;
+  type: string;
 }
 
 export type UserModelType = typeof Model & {

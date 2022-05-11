@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
-import { getAuthHeader } from '../helper/auth';
-import AuthService from '../services/AuthService';
 
-import Controller, { HTTPMethods } from '../typings/Controller';
+import AuthService from '../services/AuthService';
+import Controller from '../typings/Controller';
+
+import { getAuthHeader } from '../helper/auth';
+import { HTTPMethods } from '../typings/Controller';
+
+import { LoginToAccount, RequireFieldNotProvided } from '../output/errors';
 
 export default class AuthController extends Controller {
   path = '/auth';
@@ -19,7 +23,7 @@ export default class AuthController extends Controller {
     },
     {
       path: '/logout',
-      method: HTTPMethods.POST,
+      method: HTTPMethods.GET,
       handler: this.handleLogout,
     },
   ];
@@ -33,8 +37,18 @@ export default class AuthController extends Controller {
       const username = request.body.username;
       const password = request.body.password;
 
-      const authService = new AuthService(username, password);
-      const data = await authService.login();
+      if (username === undefined || password === undefined) {
+        super.error(
+          response,
+          RequireFieldNotProvided.message,
+          RequireFieldNotProvided.statusCode
+        );
+        return;
+      }
+
+      const authService = new AuthService();
+      const data = await authService.login(username, password);
+
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
         return;
@@ -54,8 +68,22 @@ export default class AuthController extends Controller {
       const email = request.body.email;
       const type = request.body.type;
 
-      const authService = new AuthService(username, password, type, email);
-      const data = await authService.register();
+      if (
+        username === undefined ||
+        password === undefined ||
+        email === undefined ||
+        type === undefined
+      ) {
+        super.error(
+          response,
+          RequireFieldNotProvided.message,
+          RequireFieldNotProvided.statusCode
+        );
+        return;
+      }
+
+      const authService = new AuthService();
+      const data = await authService.register(username, password, email, type);
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
         return;
@@ -71,19 +99,18 @@ export default class AuthController extends Controller {
   async handleLogout(request: Request, response: Response): Promise<void> {
     try {
       const userId = getAuthHeader(request);
-      const username = request.body.username;
-      const password = request.body.password;
-      const email = request.body.email;
-      const type = request.body.type;
 
-      const authService = new AuthService(
-        username,
-        password,
-        type,
-        email,
-        userId
-      );
-      const data = await authService.logout();
+      if (userId === undefined) {
+        super.error(
+          response,
+          LoginToAccount.message,
+          LoginToAccount.statusCode
+        );
+        return;
+      }
+
+      const authService = new AuthService();
+      const data = await authService.logout(userId);
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
       }
