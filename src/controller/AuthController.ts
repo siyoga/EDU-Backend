@@ -6,7 +6,7 @@ import Controller from '../typings/Controller';
 import { getAuthHeader } from '../helper/auth';
 import { HTTPMethods } from '../typings/Controller';
 
-import { LoginToAccount, RequireFieldNotProvided } from '../output/errors';
+import { ServerIssues } from '../output/errors';
 
 export default class AuthController extends Controller {
   path = '/auth';
@@ -40,8 +40,8 @@ export default class AuthController extends Controller {
       if (username === undefined || password === undefined) {
         super.error(
           response,
-          RequireFieldNotProvided.message,
-          RequireFieldNotProvided.statusCode
+          ServerIssues.RequireFieldNotProvided.message,
+          ServerIssues.RequireFieldNotProvided.statusCode
         );
         return;
       }
@@ -76,8 +76,8 @@ export default class AuthController extends Controller {
       ) {
         super.error(
           response,
-          RequireFieldNotProvided.message,
-          RequireFieldNotProvided.statusCode
+          ServerIssues.RequireFieldNotProvided.message,
+          ServerIssues.RequireFieldNotProvided.statusCode
         );
         return;
       }
@@ -103,8 +103,8 @@ export default class AuthController extends Controller {
       if (userId === undefined) {
         super.error(
           response,
-          LoginToAccount.message,
-          LoginToAccount.statusCode
+          ServerIssues.LoginToAccount.message,
+          ServerIssues.LoginToAccount.statusCode
         );
         return;
       }

@@ -3,12 +3,7 @@ import database from '../db_models';
 import { UploadedFile } from 'express-fileupload';
 import { destinationPath } from '../../config';
 import { IVideo } from '../db_models/Video';
-import {
-  ServerError,
-  VideoAlreadyExist,
-  VideoCannotBeUpload,
-  VideoIsNotExist,
-} from '../output/errors';
+import { ServerIssues, DatabaseIssues } from '../output/errors';
 import {
   SuccessVideoDelete,
   SuccessVideoGet,
@@ -39,14 +34,14 @@ export default class VideoService {
       });
 
       if (existVideo !== null) {
-        return VideoAlreadyExist;
+        return DatabaseIssues.VideoAlreadyExist;
       }
 
       const path = `${destinationPath}/videos/${file.name}`;
 
       file.mv(path, (err) => {
         if (err) {
-          return VideoCannotBeUpload;
+          return DatabaseIssues.VideoCannotBeUpload;
         }
       });
 
@@ -67,7 +62,7 @@ export default class VideoService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -81,7 +76,7 @@ export default class VideoService {
       });
 
       if (existVideo === null) {
-        return VideoIsNotExist;
+        return DatabaseIssues.VideoIsNotExist;
       }
 
       const data = this.prepareResponse(existVideo);
@@ -94,7 +89,7 @@ export default class VideoService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -111,7 +106,7 @@ export default class VideoService {
       });
 
       if (existVideo === null) {
-        return VideoIsNotExist;
+        return DatabaseIssues.VideoIsNotExist;
       }
 
       const data = this.prepareResponse(existVideo);
@@ -124,7 +119,7 @@ export default class VideoService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -143,7 +138,7 @@ export default class VideoService {
       });
 
       if (existVideo === null) {
-        return VideoIsNotExist;
+        return DatabaseIssues.VideoIsNotExist;
       }
 
       if (newLessonNumber !== undefined) {
@@ -169,7 +164,7 @@ export default class VideoService {
         });
 
         if (videoByNewName !== null) {
-          return VideoAlreadyExist;
+          return DatabaseIssues.VideoAlreadyExist;
         }
 
         existVideo.name = newName;
@@ -186,7 +181,7 @@ export default class VideoService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 

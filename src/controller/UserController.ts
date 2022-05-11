@@ -4,7 +4,7 @@ import Controller from '../typings/Controller';
 import UserService from '../services/UserService';
 
 import { HTTPMethods } from '../typings/Controller';
-import { LoginToAccount, RequireFieldNotProvided } from '../output/errors';
+import { ServerIssues } from '../output/errors';
 import { decodeToken, getAuthHeader } from '../helper/auth';
 
 export default class UserController extends Controller {
@@ -40,7 +40,11 @@ export default class UserController extends Controller {
     const userId = getAuthHeader(request);
 
     if (userId === undefined) {
-      super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
+      super.error(
+        response,
+        ServerIssues.LoginToAccount.message,
+        ServerIssues.LoginToAccount.statusCode
+      );
       return;
     }
 
@@ -60,15 +64,19 @@ export default class UserController extends Controller {
     const newEmail = request.body.newEmail;
 
     if (userId === undefined) {
-      super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
+      super.error(
+        response,
+        ServerIssues.LoginToAccount.message,
+        ServerIssues.LoginToAccount.statusCode
+      );
       return;
     }
 
     if (newEmail === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -94,15 +102,19 @@ export default class UserController extends Controller {
     const newUsername = request.body.newUsername;
 
     if (userId === undefined) {
-      super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
+      super.error(
+        response,
+        ServerIssues.LoginToAccount.message,
+        ServerIssues.LoginToAccount.statusCode
+      );
       return;
     }
 
     if (newUsername === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -129,15 +141,19 @@ export default class UserController extends Controller {
     const newPassword = request.body.newPassword;
 
     if (userId === undefined) {
-      super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
+      super.error(
+        response,
+        ServerIssues.LoginToAccount.message,
+        ServerIssues.LoginToAccount.statusCode
+      );
       return;
     }
 
     if (oldPassword === undefined || newPassword === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }

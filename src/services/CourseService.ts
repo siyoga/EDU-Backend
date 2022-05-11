@@ -1,11 +1,7 @@
 import { Op } from 'sequelize';
 import database from '../db_models';
 import { ICourse } from '../db_models/Course';
-import {
-  CourseAlreadyExist,
-  CourseNotFound,
-  ServerError,
-} from '../output/errors';
+import { DatabaseIssues, ServerIssues } from '../output/errors';
 import {
   SuccessCourseCreated,
   SuccessCourseDelete,
@@ -33,7 +29,7 @@ export default class CourseService {
       });
 
       if (foundCourse !== null) {
-        return CourseAlreadyExist;
+        return DatabaseIssues.CourseAlreadyExist;
       }
 
       const createdCourse = await database.Course.create({
@@ -51,7 +47,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -68,7 +64,7 @@ export default class CourseService {
       });
 
       if (foundCourse === null) {
-        return CourseNotFound;
+        return DatabaseIssues.CourseNotFound;
       }
 
       if (newName !== undefined) {
@@ -90,7 +86,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -103,7 +99,7 @@ export default class CourseService {
       });
 
       if (foundCourse === null) {
-        return CourseNotFound;
+        return DatabaseIssues.CourseNotFound;
       }
 
       const data = this.prepareResponse(foundCourse);
@@ -115,7 +111,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -129,7 +125,7 @@ export default class CourseService {
       });
 
       if (foundCourses === null) {
-        return CourseNotFound;
+        return DatabaseIssues.CourseNotFound;
       }
 
       foundCourses.forEach((element) => {
@@ -144,7 +140,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -162,7 +158,7 @@ export default class CourseService {
       });
 
       if (foundCourses === null) {
-        return CourseNotFound;
+        return DatabaseIssues.CourseNotFound;
       }
 
       foundCourses.forEach((element) => {
@@ -177,7 +173,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -190,7 +186,7 @@ export default class CourseService {
       });
 
       if (foundCourse === null) {
-        return CourseNotFound;
+        return DatabaseIssues.CourseNotFound;
       }
 
       await foundCourse.destroy();
@@ -201,7 +197,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 
@@ -214,7 +210,7 @@ export default class CourseService {
       });
 
       if (foundCourse === null) {
-        return CourseNotFound;
+        return DatabaseIssues.CourseNotFound;
       }
 
       foundCourse.studentsCount++;
@@ -230,7 +226,7 @@ export default class CourseService {
       };
     } catch (e) {
       console.log(e);
-      return ServerError;
+      return ServerIssues.ServerError;
     }
   }
 

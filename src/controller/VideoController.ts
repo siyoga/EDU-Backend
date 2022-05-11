@@ -6,11 +6,7 @@ import { HTTPMethods } from '../typings/Controller';
 import Controller from '../typings/Controller';
 import VideoService from '../services/VideoService';
 
-import {
-  FilesNotProvided,
-  RangeHeadersRequire,
-  RequireFieldNotProvided,
-} from '../output/errors';
+import { ServerIssues } from '../output/errors';
 
 export default class VideoController extends Controller {
   path = '/video';
@@ -53,8 +49,8 @@ export default class VideoController extends Controller {
     if (video === undefined) {
       super.error(
         response,
-        FilesNotProvided.message,
-        FilesNotProvided.statusCode
+        ServerIssues.FilesNotProvided.message,
+        ServerIssues.FilesNotProvided.statusCode
       );
       return;
     }
@@ -62,8 +58,8 @@ export default class VideoController extends Controller {
     if (lessonNumber === undefined || courseId === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
@@ -92,8 +88,8 @@ export default class VideoController extends Controller {
     if (rangeHeader === undefined) {
       super.error(
         response,
-        RangeHeadersRequire.message,
-        RangeHeadersRequire.statusCode
+        ServerIssues.RangeHeadersRequire.message,
+        ServerIssues.RangeHeadersRequire.statusCode
       );
       return;
     }
@@ -135,8 +131,8 @@ export default class VideoController extends Controller {
     if (courseId === undefined || lessonNumber === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
     }
 
@@ -161,8 +157,8 @@ export default class VideoController extends Controller {
     if (courseId === undefined || lessonNumber === undefined) {
       super.error(
         response,
-        RequireFieldNotProvided.message,
-        RequireFieldNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
