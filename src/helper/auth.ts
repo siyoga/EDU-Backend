@@ -1,4 +1,8 @@
+import jwt from 'jsonwebtoken';
 import { Request } from 'express';
+
+import { accessToken } from '../../config';
+import { ICryptToken } from '../typings';
 
 export function getAuthHeader(request: Request): string | undefined {
   if (
@@ -11,4 +15,9 @@ export function getAuthHeader(request: Request): string | undefined {
   }
 
   return undefined;
+}
+
+export function decodeToken(userId: string): string {
+  const decodedUserId = jwt.verify(userId, accessToken) as ICryptToken;
+  return decodedUserId.userId;
 }

@@ -53,3 +53,7 @@ export const SuccessUserPasswordUpdate = {
 export const SuccessVideoUpload = {
   message: 'Video uploaded successfully.',
 };
+
+export const SuccessVideoGet = {
+  message: 'Video found successfully.',
+};

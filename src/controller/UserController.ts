@@ -1,9 +1,10 @@
 import { Response, Request } from 'express';
 
-import { HTTPMethods } from '../typings/Controller';
-import { LoginToAccount } from '../output/errors';
 import Controller from '../typings/Controller';
 import UserService from '../services/UserService';
+
+import { HTTPMethods } from '../typings/Controller';
+import { LoginToAccount, RequireFieldNotProvided } from '../output/errors';
 import { getAuthHeader } from '../helper/auth';
 
 export default class UserController extends Controller {
@@ -43,8 +44,8 @@ export default class UserController extends Controller {
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.get();
+    const userService = new UserService();
+    const data = await userService.get(userId);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -55,15 +56,24 @@ export default class UserController extends Controller {
 
   async handleUpdateEmail(request: Request, response: Response): Promise<void> {
     const userId = getAuthHeader(request);
-    const email = request.body.newEmail;
+    const newEmail = request.body.newEmail;
 
     if (userId === undefined) {
       super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.updateUserEmail(email);
+    if (newEmail === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const userService = new UserService();
+    const data = await userService.updateUserEmail(userId, newEmail);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -79,15 +89,24 @@ export default class UserController extends Controller {
     response: Response
   ): Promise<void> {
     const userId = getAuthHeader(request);
-    const username = request.body.username;
+    const newUsername = request.body.newUsername;
 
     if (userId === undefined) {
       super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.updateUsername(username);
+    if (newUsername === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const userService = new UserService();
+    const data = await userService.updateUsername(userId, newUsername);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -111,8 +130,21 @@ export default class UserController extends Controller {
       return;
     }
 
-    const userService = new UserService(userId);
-    const data = await userService.updateUserPassword(oldPassword, newPassword);
+    if (oldPassword === undefined || newPassword === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const userService = new UserService();
+    const data = await userService.updateUserPassword(
+      userId,
+      oldPassword,
+      newPassword
+    );
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);

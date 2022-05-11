@@ -1,6 +1,18 @@
 import { Request, Response } from 'express';
+
 import CourseService from '../services/CourseService';
-import Controller, { HTTPMethods } from '../typings/Controller';
+import UserService from '../services/UserService';
+import Controller from '../typings/Controller';
+
+import { decodeToken, getAuthHeader } from '../helper/auth';
+import { HTTPMethods } from '../typings/Controller';
+
+import {
+  DoNotHavePermission,
+  LoginToAccount,
+  RequireFieldNotProvided,
+} from '../output/errors';
+import { ISafeCourseData } from '../typings';
 
 export default class CourseController extends Controller {
   path = '/course';
@@ -57,8 +69,20 @@ export default class CourseController extends Controller {
     const description = request.body.description;
     const author = request.body.author;
 
-    const courseService = new CourseService(name, description, author);
-    const data = await courseService.create();
+    if (
+      name === undefined ||
+      description === undefined ||
+      author === undefined
+    ) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+    }
+
+    const courseService = new CourseService();
+    const data = await courseService.create(name, description, author);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -69,13 +93,40 @@ export default class CourseController extends Controller {
   }
 
   async handleUpdate(request: Request, response: Response): Promise<void> {
-    // TODO добавить проверку по автору
-    const id = request.body.id;
+    const userId = getAuthHeader(request);
+    const courseId = request.body.courseId;
     const newName = request.body.newName;
     const newDescription = request.body.newDescription;
 
-    const courseService = new CourseService(newName, newDescription);
-    const data = await courseService.update(id);
+    if (userId === undefined) {
+      super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
+      return;
+    }
+
+    const decodedUserId = decodeToken(userId);
+
+    if (courseId === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const isAuthorValid = await this.checkAuthor(decodedUserId, courseId);
+
+    if (!isAuthorValid) {
+      super.error(
+        response,
+        DoNotHavePermission.message,
+        DoNotHavePermission.statusCode
+      );
+      return;
+    }
+
+    const courseService = new CourseService();
+    const data = await courseService.update(courseId, newName, newDescription);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -86,10 +137,19 @@ export default class CourseController extends Controller {
   }
 
   async handleGetById(request: Request, response: Response): Promise<void> {
-    const id = request.params.id;
+    const courseId = request.params.courseId;
+
+    if (courseId === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
 
     const courseService = new CourseService();
-    const data = await courseService.getById(id);
+    const data = await courseService.getByCourseId(courseId);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -101,6 +161,15 @@ export default class CourseController extends Controller {
 
   async handleGetByAuthor(request: Request, response: Response): Promise<void> {
     const author = request.params.author;
+
+    if (author === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
 
     const courseService = new CourseService();
     const data = await courseService.getByAuthor(author);
@@ -116,6 +185,15 @@ export default class CourseController extends Controller {
   async handleGetByName(request: Request, response: Response): Promise<void> {
     const name = request.params.name;
 
+    if (name === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
     const courseService = new CourseService();
     const data = await courseService.getByName(name);
 
@@ -128,11 +206,38 @@ export default class CourseController extends Controller {
   }
 
   async handleDelete(request: Request, response: Response): Promise<void> {
-    // TODO добавить проверку по автору
-    const id = request.body.id;
+    const userId = getAuthHeader(request);
+    const courseId = request.body.courseId;
+
+    if (userId === undefined) {
+      super.error(response, LoginToAccount.message, LoginToAccount.statusCode);
+      return;
+    }
+
+    const decodedUserId = decodeToken(userId);
+
+    if (courseId === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const isAuthorValid = await this.checkAuthor(decodedUserId, courseId);
+
+    if (!isAuthorValid) {
+      super.error(
+        response,
+        DoNotHavePermission.message,
+        DoNotHavePermission.statusCode
+      );
+      return;
+    }
 
     const courseService = new CourseService();
-    const data = await courseService.delete(id);
+    const data = await courseService.delete(courseId);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -143,7 +248,6 @@ export default class CourseController extends Controller {
   }
 
   async handleAddStudent(request: Request, response: Response): Promise<void> {
-    // TODO добавить проверку по автору
     const id = request.body.id;
 
     const courseService = new CourseService();
@@ -155,5 +259,23 @@ export default class CourseController extends Controller {
     }
 
     super.success(response, data.data!, data.message);
+  }
+
+  private async checkAuthor(
+    userId: string,
+    courseId: string
+  ): Promise<Boolean> {
+    const courseService = new CourseService();
+    const userService = new UserService();
+
+    const author = (await userService.get(userId)).data!;
+    const course = (await courseService.getByCourseId(courseId))
+      .data! as ISafeCourseData;
+
+    if (author.user.username !== course.author) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -4,6 +4,7 @@ export interface IVideo extends Model {
   readonly id: string;
   name: string;
   path: string;
+  lessonNumber: number;
   courseId: string;
 }
 
@@ -28,6 +29,11 @@ export function getVideo(sequelize: Sequelize): VideoModelType {
 
       path: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+
+      lessonNumber: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },

@@ -1,5 +1,6 @@
-node_modules
+public
 settings.env
 dist
 config/
 yarn.lock
+node_modules

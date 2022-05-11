@@ -58,7 +58,13 @@ export const CourseAlreadyExist = {
 
 export const RequireFieldNotProvided = {
   statusCode: 400,
-  message: "Email doesn't provided.",
+  message: "Some or one of require field doesn't provided.",
+  success: false,
+};
+
+export const DoNotHavePermission = {
+  statusCode: 400,
+  message: "You don't have permission for this",
   success: false,
 };
 
@@ -77,5 +83,17 @@ export const FilesNotProvided = {
 export const VideoCannotBeUpload = {
   statusCode: 409,
   message: "Video can't be upload",
+  success: false,
+};
+
+export const VideoIsNotExist = {
+  statusCode: 404,
+  message: "Video isn't exist",
+  success: false,
+};
+
+export const RangeHeadersRequire = {
+  statusCode: 400,
+  message: 'Requires Range Headers',
   success: false,
 };

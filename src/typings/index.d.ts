@@ -32,5 +32,6 @@ export interface ISafeCourseData {
 export interface ISafeVideoData {
   name: string;
   path: string;
+  lessonNumber: number;
   courseId: string;
 }

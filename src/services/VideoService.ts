@@ -3,34 +3,31 @@ import { destinationPath } from '../../config';
 import database from '../db_models';
 import { IVideo } from '../db_models/Video';
 import {
-  FilesNotProvided,
-  RequireFieldNotProvided,
   ServerError,
   VideoAlreadyExist,
   VideoCannotBeUpload,
+  VideoIsNotExist,
 } from '../output/errors';
-import { SuccessVideoUpload } from '../output/success';
+import { SuccessVideoGet, SuccessVideoUpload } from '../output/success';
 import { ISafeVideoData } from '../typings';
 
 interface VideoData {
   statusCode: number;
   message: string;
   success: boolean;
-  data?: object;
+  data?: ISafeVideoData;
 }
 
 export default class VideoService {
-  constructor(public file?: UploadedFile) {}
-
-  public async upload(courseId: string): Promise<VideoData> {
+  public async upload(
+    file: UploadedFile,
+    courseId: string,
+    lessonNumber: number
+  ): Promise<VideoData> {
     try {
-      if (this.file === undefined) {
-        return FilesNotProvided;
-      }
-
       const existVideo = await database.Video.findOne({
         where: {
-          name: this.file.name,
+          name: file.name,
         },
       });
 
@@ -38,17 +35,18 @@ export default class VideoService {
         return VideoAlreadyExist;
       }
 
-      const path = `${destinationPath}/videos/${this.file.name}`;
+      const path = `${destinationPath}/videos/${file.name}`;
 
-      this.file.mv(path, (err) => {
+      file.mv(path, (err) => {
         if (err) {
           return VideoCannotBeUpload;
         }
       });
 
       const newVideo = await database.Video.create({
-        name: this.file!.name,
+        name: file.name,
         path: path,
+        lessonNumber: lessonNumber,
         courseId: courseId,
       });
 
@@ -66,10 +64,38 @@ export default class VideoService {
     }
   }
 
+  public async get(courseId: string, lessonNumber: number): Promise<VideoData> {
+    try {
+      const existVideo = await database.Video.findOne({
+        where: {
+          courseId: courseId,
+          lessonNumber: lessonNumber,
+        },
+      });
+
+      if (existVideo === null) {
+        return VideoIsNotExist;
+      }
+
+      const data = this.prepareResponse(existVideo);
+
+      return {
+        statusCode: 200,
+        message: SuccessVideoGet.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerError;
+    }
+  }
+
   private prepareResponse(video: IVideo): ISafeVideoData {
     const data: ISafeVideoData = {
       name: video.name,
       path: video.path,
+      lessonNumber: video.lessonNumber,
       courseId: video.courseId,
     };
 
