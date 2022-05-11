@@ -8,7 +8,11 @@ import {
   VideoCannotBeUpload,
   VideoIsNotExist,
 } from '../output/errors';
-import { SuccessVideoGet, SuccessVideoUpload } from '../output/success';
+import {
+  SuccessVideoDelete,
+  SuccessVideoGet,
+  SuccessVideoUpload,
+} from '../output/success';
 import { ISafeVideoData } from '../typings';
 
 interface VideoData {
@@ -82,6 +86,36 @@ export default class VideoService {
       return {
         statusCode: 200,
         message: SuccessVideoGet.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerError;
+    }
+  }
+
+  public async delete(
+    courseId: string,
+    lessonNumber: number
+  ): Promise<VideoData> {
+    try {
+      const existVideo = await database.Video.findOne({
+        where: {
+          courseId: courseId,
+          lessonNumber: lessonNumber,
+        },
+      });
+
+      if (existVideo === null) {
+        return VideoIsNotExist;
+      }
+
+      const data = this.prepareResponse(existVideo);
+      await existVideo.destroy();
+      return {
+        statusCode: 200,
+        message: SuccessVideoDelete.message,
         success: true,
         data: data,
       };

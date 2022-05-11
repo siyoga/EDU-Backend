@@ -6,7 +6,11 @@ import { HTTPMethods } from '../typings/Controller';
 import Controller from '../typings/Controller';
 import VideoService from '../services/VideoService';
 
-import { FilesNotProvided, RangeHeadersRequire } from '../output/errors';
+import {
+  FilesNotProvided,
+  RangeHeadersRequire,
+  RequireFieldNotProvided,
+} from '../output/errors';
 
 export default class VideoController extends Controller {
   path = '/video';
@@ -21,6 +25,12 @@ export default class VideoController extends Controller {
       path: '/get/:courseId/:lessonNumber',
       method: HTTPMethods.GET,
       handler: this.handleGet,
+    },
+
+    {
+      path: '/delete',
+      method: HTTPMethods.DELETE,
+      handler: this.handleDelete,
     },
   ];
 
@@ -42,8 +52,17 @@ export default class VideoController extends Controller {
       return;
     }
 
-    const videoService = new VideoService(video);
-    const data = await videoService.upload(courseId, lessonNumber);
+    if (lessonNumber === undefined || courseId === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const videoService = new VideoService();
+    const data = await videoService.upload(video, courseId, lessonNumber);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -66,8 +85,6 @@ export default class VideoController extends Controller {
       );
       return;
     }
-
-    console.log('dsdasdas');
 
     const videoService = new VideoService();
     const courseVideo = await videoService.get(courseId, lessonNumber);
@@ -97,5 +114,29 @@ export default class VideoController extends Controller {
     });
 
     super.successStream(response, headers, videoStream);
+  }
+
+  async handleDelete(request: Request, response: Response) {
+    const courseId = request.body.courseId;
+    const lessonNumber = request.body.lessonNumber as number;
+
+    if (courseId === undefined || lessonNumber === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+    }
+
+    const videoService = new VideoService();
+    const data = await videoService.delete(courseId, lessonNumber);
+
+    if (!data.success) {
+      super.error(response, data.message, data.statusCode);
+      return;
+    }
+
+    fs.unlinkSync(data.data!.path);
+    super.success(response, data, data.message);
   }
 }

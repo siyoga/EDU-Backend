@@ -57,3 +57,7 @@ export const SuccessVideoUpload = {
 export const SuccessVideoGet = {
   message: 'Video found successfully.',
 };
+
+export const SuccessVideoDelete = {
+  message: 'Video deleted successfully.',
+};

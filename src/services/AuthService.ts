@@ -121,10 +121,9 @@ export default class AuthService {
 
   public async refresh(userId: string): Promise<AuthData> {
     try {
-      const decodedUserId = jwt.verify(userId, accessToken) as ICryptToken;
       const dbToken = await database.Token.findOne({
         where: {
-          userId: decodedUserId.userId,
+          userId: userId,
         },
       });
 
@@ -149,7 +148,6 @@ export default class AuthService {
   }
 
   private async generateTokenPair(userId: string): Promise<ISafeToken> {
-    console.log(accessToken);
     const refreshToken = uuid.v4();
     await database.Token.create({
       refreshToken: refreshToken,
