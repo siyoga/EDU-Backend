@@ -61,3 +61,7 @@ export const SuccessVideoGet = {
 export const SuccessVideoDelete = {
   message: 'Video deleted successfully.',
 };
+
+export const SuccessVideoUpdate = {
+  message: 'Video updated successfully',
+};

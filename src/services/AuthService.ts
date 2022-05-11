@@ -1,5 +1,4 @@
 import * as argon2 from 'argon2';
-import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import database from '../db_models';
 import * as uuid from 'uuid';
@@ -8,11 +7,9 @@ import { IUser } from '../db_models/User';
 import {
   TokenNotFound,
   InvalidPassword,
-  LoginToAccount,
   NoSuchUser,
   ServerError,
   UserAlreadyExist,
-  RequireFieldNotProvided,
 } from '../output/errors';
 import {
   SuccessLogin,
@@ -169,6 +166,7 @@ export default class AuthService {
       user: {
         username: user.username,
         email: user.email!,
+        type: user.type,
       },
       tokenPair: tokenPair,
     };

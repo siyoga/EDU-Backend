@@ -1,6 +1,7 @@
 export interface ISafeUser {
   username: string;
   email: string;
+  type: string;
 }
 
 export interface ISafeUserData {

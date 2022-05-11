@@ -23,7 +23,7 @@ export default class AuthController extends Controller {
     },
     {
       path: '/logout',
-      method: HTTPMethods.POST,
+      method: HTTPMethods.GET,
       handler: this.handleLogout,
     },
   ];
@@ -83,7 +83,7 @@ export default class AuthController extends Controller {
       }
 
       const authService = new AuthService();
-      const data = await authService.register(username, password, type, email);
+      const data = await authService.register(username, password, email, type);
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
         return;

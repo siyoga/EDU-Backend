@@ -4,7 +4,6 @@ import { ICourse } from '../db_models/Course';
 import {
   CourseAlreadyExist,
   CourseNotFound,
-  RequireFieldNotProvided,
   ServerError,
 } from '../output/errors';
 import {
@@ -194,7 +193,7 @@ export default class CourseService {
         return CourseNotFound;
       }
 
-      foundCourse.destroy();
+      await foundCourse.destroy();
       return {
         statusCode: 200,
         message: SuccessCourseDelete.message,
@@ -219,7 +218,7 @@ export default class CourseService {
       }
 
       foundCourse.studentsCount++;
-      foundCourse.save();
+      await foundCourse.save();
 
       const data = this.prepareResponse(foundCourse);
 

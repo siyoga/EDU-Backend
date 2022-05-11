@@ -108,7 +108,7 @@ export default class UserService {
   ): Promise<UserData> {
     try {
       const existUser = await database.User.findOne({
-        where: { userId },
+        where: { id: userId },
       });
 
       if (existUser === null) {
@@ -146,6 +146,7 @@ export default class UserService {
       user: {
         username: user.username,
         email: user.email!,
+        type: user.type,
       },
     };
 

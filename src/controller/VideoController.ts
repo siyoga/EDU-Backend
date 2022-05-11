@@ -32,6 +32,12 @@ export default class VideoController extends Controller {
       method: HTTPMethods.DELETE,
       handler: this.handleDelete,
     },
+
+    {
+      path: '/update',
+      method: HTTPMethods.PATCH,
+      handler: this.handleUpdate,
+    },
   ];
 
   constructor() {
@@ -42,6 +48,7 @@ export default class VideoController extends Controller {
     const video = request.files?.video as fileUpload.UploadedFile | undefined;
     const lessonNumber = request.body.lessonNumber as number;
     const courseId = request.body.courseId;
+    const videoName = request.body.videoName;
 
     if (video === undefined) {
       super.error(
@@ -62,7 +69,12 @@ export default class VideoController extends Controller {
     }
 
     const videoService = new VideoService();
-    const data = await videoService.upload(video, courseId, lessonNumber);
+    const data = await videoService.upload(
+      video,
+      courseId,
+      videoName,
+      lessonNumber
+    );
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -116,7 +128,7 @@ export default class VideoController extends Controller {
     super.successStream(response, headers, videoStream);
   }
 
-  async handleDelete(request: Request, response: Response) {
+  async handleDelete(request: Request, response: Response): Promise<void> {
     const courseId = request.body.courseId;
     const lessonNumber = request.body.lessonNumber as number;
 
@@ -137,6 +149,37 @@ export default class VideoController extends Controller {
     }
 
     fs.unlinkSync(data.data!.path);
+    super.success(response, data, data.message);
+  }
+
+  async handleUpdate(request: Request, response: Response): Promise<void> {
+    const courseId = request.body.courseId;
+    const lessonNumber = request.body.lessonNumber as number;
+    const newName = request.body.newName;
+    const newLessonNumber = request.body.newLessonNumber;
+
+    if (courseId === undefined || lessonNumber === undefined) {
+      super.error(
+        response,
+        RequireFieldNotProvided.message,
+        RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const videoService = new VideoService();
+    const data = await videoService.update(
+      courseId,
+      lessonNumber,
+      newLessonNumber,
+      newName
+    );
+
+    if (!data.success) {
+      super.error(response, data.message, data.statusCode);
+      return;
+    }
+
     super.success(response, data, data.message);
   }
 }

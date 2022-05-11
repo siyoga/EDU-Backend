@@ -5,7 +5,7 @@ import UserService from '../services/UserService';
 
 import { HTTPMethods } from '../typings/Controller';
 import { LoginToAccount, RequireFieldNotProvided } from '../output/errors';
-import { getAuthHeader } from '../helper/auth';
+import { decodeToken, getAuthHeader } from '../helper/auth';
 
 export default class UserController extends Controller {
   path = '/user';
@@ -44,8 +44,9 @@ export default class UserController extends Controller {
       return;
     }
 
+    const decodedUserId = decodeToken(userId);
     const userService = new UserService();
-    const data = await userService.get(userId);
+    const data = await userService.get(decodedUserId);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -72,8 +73,9 @@ export default class UserController extends Controller {
       return;
     }
 
+    const decodedUserId = decodeToken(userId);
     const userService = new UserService();
-    const data = await userService.updateUserEmail(userId, newEmail);
+    const data = await userService.updateUserEmail(decodedUserId, newEmail);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -105,8 +107,9 @@ export default class UserController extends Controller {
       return;
     }
 
+    const decodedUserId = decodeToken(userId);
     const userService = new UserService();
-    const data = await userService.updateUsername(userId, newUsername);
+    const data = await userService.updateUsername(decodedUserId, newUsername);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
@@ -139,9 +142,10 @@ export default class UserController extends Controller {
       return;
     }
 
+    const decodedUserId = decodeToken(userId);
     const userService = new UserService();
     const data = await userService.updateUserPassword(
-      userId,
+      decodedUserId,
       oldPassword,
       newPassword
     );

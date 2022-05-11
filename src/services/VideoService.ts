@@ -1,6 +1,7 @@
+import database from '../db_models';
+
 import { UploadedFile } from 'express-fileupload';
 import { destinationPath } from '../../config';
-import database from '../db_models';
 import { IVideo } from '../db_models/Video';
 import {
   ServerError,
@@ -11,6 +12,7 @@ import {
 import {
   SuccessVideoDelete,
   SuccessVideoGet,
+  SuccessVideoUpdate,
   SuccessVideoUpload,
 } from '../output/success';
 import { ISafeVideoData } from '../typings';
@@ -26,12 +28,13 @@ export default class VideoService {
   public async upload(
     file: UploadedFile,
     courseId: string,
+    videoName: string,
     lessonNumber: number
   ): Promise<VideoData> {
     try {
       const existVideo = await database.Video.findOne({
         where: {
-          name: file.name,
+          name: videoName,
         },
       });
 
@@ -48,7 +51,7 @@ export default class VideoService {
       });
 
       const newVideo = await database.Video.create({
-        name: file.name,
+        name: videoName,
         path: path,
         lessonNumber: lessonNumber,
         courseId: courseId,
@@ -116,6 +119,68 @@ export default class VideoService {
       return {
         statusCode: 200,
         message: SuccessVideoDelete.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerError;
+    }
+  }
+
+  public async update(
+    courseId: string,
+    lessonNumber: number,
+    newLessonNumber?: number,
+    newName?: string
+  ): Promise<VideoData> {
+    try {
+      const existVideo = await database.Video.findOne({
+        where: {
+          courseId: courseId,
+          lessonNumber: lessonNumber,
+        },
+      });
+
+      if (existVideo === null) {
+        return VideoIsNotExist;
+      }
+
+      if (newLessonNumber !== undefined) {
+        const videobyNewLessonNumber = (await database.Video.findOne({
+          where: {
+            courseId: courseId,
+            lessonNumber: lessonNumber,
+          },
+        })) as IVideo;
+
+        videobyNewLessonNumber.lessonNumber = lessonNumber;
+        existVideo.lessonNumber = newLessonNumber;
+
+        await videobyNewLessonNumber.save();
+      }
+
+      if (newName !== undefined) {
+        const videoByNewName = await database.Video.findOne({
+          where: {
+            courseId: courseId,
+            name: newName,
+          },
+        });
+
+        if (videoByNewName !== null) {
+          return VideoAlreadyExist;
+        }
+
+        existVideo.name = newName;
+      }
+
+      await existVideo.save();
+      const data = this.prepareResponse(existVideo);
+
+      return {
+        statusCode: 200,
+        message: SuccessVideoUpdate.message,
         success: true,
         data: data,
       };
