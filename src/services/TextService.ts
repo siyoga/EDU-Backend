@@ -11,6 +11,7 @@ import {
   SuccessTextUpload,
 } from '../output/success';
 import { ISafeTextData } from '../typings';
+import fs from "fs"
 
 interface TextData {
   statusCode: number;
@@ -36,8 +37,17 @@ export default class TextService {
         if (existText !== null) {
             return DatabaseIssues.TextAlreadyExist
         }
+        
+        let path = `${destinationPath}/texts/`;
+        
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path, {recursive: true});
+          path = `${destinationPath}/texts/${file.name}`;
+        }
 
-        const path = `${destinationPath}/texts/${file.name}`;
+        else {
+          path = `${destinationPath}/texts/${file.name}`;
+        }
 
         file.mv(path, (err) => {
             if (err) {

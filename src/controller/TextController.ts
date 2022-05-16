@@ -80,12 +80,11 @@ export default class TextController extends Controller {
     super.success(response, data, data.message);
   }
 
-  async handleGet(request: Request, response: Response): Promise<void> {
-    const rangeHeader = request.headers.range;
+  async handleGet(request: Request, response: Response): Promise<void> { //NB
     const courseId = request.params.courseId;
     const lessonNumber = request.params.lessonNumber as unknown as number;
 
-    if (rangeHeader === undefined) {
+    if (courseId === undefined) {
       super.error(
         response,
         ServerIssues.RangeHeadersRequire.message,
@@ -96,32 +95,6 @@ export default class TextController extends Controller {
 
     const textService = new TextService();
     const courseText = await textService.get(courseId, lessonNumber);
-
-    if (!courseText.success) {
-      super.error(response, courseText.message, courseText.statusCode);
-      return;
-    }
-
-    const textSize = fs.statSync(courseText.data!.path).size;
-
-    const CHUNK_SIZE = 10 ** 6;
-    const start = Number(rangeHeader.replace(/\D/g, ''));
-    const end = Math.min(start + CHUNK_SIZE, textSize - 1);
-    const contentLength = end - start + 1;
-
-    const headers = {
-      'Content-Range': `bytes ${start}-${end}/${textSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': contentLength,
-      'Content-Type': 'text/txt',
-    };
-
-    const textStream = fs.createReadStream(courseText.data!.path, {
-      start,
-      end,
-    });
-
-    super.successStream(response, headers, textStream);
   }
 
   async handleDelete(request: Request, response: Response): Promise<void> {
