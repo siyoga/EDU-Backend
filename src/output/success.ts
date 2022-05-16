@@ -65,3 +65,19 @@ export const SuccessVideoDelete = {
 export const SuccessVideoUpdate = {
   message: 'Video updated successfully',
 };
+
+export const SuccessTextUpload = {
+  message: 'Text uploaded successfully.',
+};
+
+export const SuccessTextGet = {
+  message: 'Text found successfully.',
+};
+
+export const SuccessTextDelete = {
+  message: 'Text deleted successfully.',
+};
+
+export const SuccessTextUpdate = {
+  message: 'Text updated successfully',
+};

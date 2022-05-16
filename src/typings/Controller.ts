@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Request, Response, Router } from 'express';
 
-import { MethodErrors } from '../output/errors';
+import { ServerIssues } from '../output/errors';
 
 export enum HTTPMethods {
   POST = 'post',
@@ -26,7 +26,7 @@ export default abstract class Controller {
       try {
         this.router[route.method](route.path, route.handler);
       } catch (err) {
-        console.log(MethodErrors.notValid);
+        console.log(ServerIssues.MethodErrors.notValid);
       }
     }
 

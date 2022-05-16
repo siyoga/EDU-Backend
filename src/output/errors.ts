@@ -104,4 +104,23 @@ export const DatabaseIssues = {
     message: "Video can't be upload",
     success: false,
   },
+
+  // TEXT
+  TextIsNotExist: {
+    statusCode: 404,
+    message: "Text isn't exist",
+    success: false,
+  },
+
+  TextAlreadyExist: {
+    statusCode: 409,
+    message: 'Similar text already exist',
+    success: false,
+  },
+
+  TextCannotBeUpload: {
+    statusCode: 409,
+    message: "Text can't be upload",
+    success: false,
+  },
 };
