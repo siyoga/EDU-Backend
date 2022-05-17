@@ -1,8 +1,10 @@
 import * as argon2 from 'argon2';
-import { UploadedFile } from 'express-fileupload';
-import { destinationPath } from '../../config';
+import fs from 'fs';
 
 import database from '../db_models';
+
+import { UploadedFile } from 'express-fileupload';
+import { destinationPath } from '../../config';
 
 import { IUser } from '../db_models/User';
 import { DatabaseIssues, ServerIssues } from '../output/errors';
@@ -15,8 +17,7 @@ import {
   SuccessSubscribe,
   SuccessUnsubscribe,
 } from '../output/success';
-import { ISafeUserData, ISafeUser } from '../typings';
-import CourseService from './CourseService';
+import { ISafeUserData } from '../typings';
 
 interface UserData {
   statusCode: number;
@@ -68,7 +69,14 @@ export default class UserService {
         return DatabaseIssues.NoSuchUser;
       }
 
-      const path = `${destinationPath}/avatars/${file.name}`;
+      let path = `${destinationPath}/avatars/`;
+
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path, { recursive: true });
+      }
+
+      path = `${destinationPath}/avatars/${file.name}`;
+
       file.mv(path, (e) => {
         if (e) {
           return DatabaseIssues.FileCannotBeUpload;

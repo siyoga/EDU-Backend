@@ -40,6 +40,12 @@ export const ServerIssues = {
     success: false,
   },
 
+  FileCanNotBeUpload: {
+    statusCode: 400,
+    message: "This file can' be upload.",
+    success: false,
+  },
+
   RangeHeadersRequire: {
     statusCode: 400,
     message: 'Requires Range Headers',

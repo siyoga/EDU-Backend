@@ -1,5 +1,7 @@
 import { Op } from 'sequelize';
+
 import database from '../db_models';
+
 import { ICourse } from '../db_models/Course';
 import { DatabaseIssues, ServerIssues } from '../output/errors';
 import {

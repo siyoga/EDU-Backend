@@ -1,5 +1,8 @@
 import fileUpload from 'express-fileupload';
 import fs from 'fs';
+import mime from 'mime';
+
+import { marked } from 'marked';
 import { Request, Response } from 'express';
 
 import { HTTPMethods } from '../typings/Controller';
@@ -64,6 +67,15 @@ export default class TextController extends Controller {
       return;
     }
 
+    if (mime.getType(text.name) !== 'text/markdown') {
+      super.error(
+        response,
+        ServerIssues.FileCanNotBeUpload.message,
+        ServerIssues.FileCanNotBeUpload.statusCode
+      );
+      return;
+    }
+
     const textService = new TextService();
     const data = await textService.upload(
       text,
@@ -80,7 +92,7 @@ export default class TextController extends Controller {
     super.success(response, data, data.message);
   }
 
-  async handleGet(request: Request, response: Response): Promise<void> { //NB
+  async handleGet(request: Request, response: Response): Promise<void> {
     const courseId = request.params.courseId;
     const lessonNumber = request.params.lessonNumber as unknown as number;
 
@@ -94,7 +106,17 @@ export default class TextController extends Controller {
     }
 
     const textService = new TextService();
-    const courseText = await textService.get(courseId, lessonNumber);
+    const text = await textService.get(courseId, lessonNumber);
+
+    if (!text.success) {
+      super.error(response, text.message, text.statusCode);
+      return;
+    }
+
+    const file = fs.readFileSync(text.data!.path, 'utf8');
+    const mdfile = marked(file.toString());
+
+    super.success(response, mdfile, text.message);
   }
 
   async handleDelete(request: Request, response: Response): Promise<void> {

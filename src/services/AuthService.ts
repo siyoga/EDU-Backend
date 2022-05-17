@@ -1,7 +1,8 @@
 import * as argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
-import database from '../db_models';
 import * as uuid from 'uuid';
+import jwt from 'jsonwebtoken';
+
+import database from '../db_models';
 
 import { IUser } from '../db_models/User';
 import { DatabaseIssues, ServerIssues } from '../output/errors';
@@ -11,12 +12,7 @@ import {
   SuccessRegister,
   SuccessTokenRefresh,
 } from '../output/success';
-import {
-  ICryptToken,
-  ISafeToken,
-  ISafeUser,
-  ISafeUserData,
-} from '../typings/index';
+import { ISafeToken, ISafeUserData } from '../typings/index';
 import { accessToken } from '../../config';
 
 interface AuthData {

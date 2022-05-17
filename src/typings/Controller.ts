@@ -35,7 +35,7 @@ export default abstract class Controller {
 
   protected success(
     response: Response,
-    data: object,
+    data: object | string,
     message?: string
   ): Response {
     return response.status(200).send({

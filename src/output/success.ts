@@ -70,7 +70,6 @@ export const SuccessVideoUpdate = {
   message: 'Video updated successfully',
 };
 
-<<<<<<< HEAD
 export const SuccessAvatarUpdate = {
   message: 'Avatar updated successfully',
 };
@@ -82,7 +81,6 @@ export const SuccessSubscribe = {
 export const SuccessUnsubscribe = {
   message: 'Successfully unsubscribe',
 };
-=======
 export const SuccessTextUpload = {
   message: 'Text uploaded successfully.',
 };
@@ -98,4 +96,3 @@ export const SuccessTextDelete = {
 export const SuccessTextUpdate = {
   message: 'Text updated successfully',
 };
->>>>>>> 6f868764faecddc878259515207b6983a84ae22e

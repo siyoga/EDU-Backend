@@ -1,3 +1,5 @@
+import mime from 'mime';
+
 import { Response, Request } from 'express';
 
 import Controller from '../typings/Controller';
@@ -102,6 +104,15 @@ export default class UserController extends Controller {
         response,
         ServerIssues.FilesNotProvided.message,
         ServerIssues.FilesNotProvided.statusCode
+      );
+      return;
+    }
+
+    if (mime.getType(avatar.name) !== 'image/png') {
+      super.error(
+        response,
+        ServerIssues.FileCanNotBeUpload.message,
+        ServerIssues.FileCanNotBeUpload.statusCode
       );
       return;
     }

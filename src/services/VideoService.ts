@@ -1,4 +1,5 @@
 import database from '../db_models';
+import fs from 'fs';
 
 import { UploadedFile } from 'express-fileupload';
 import { destinationPath } from '../../config';
@@ -37,7 +38,13 @@ export default class VideoService {
         return DatabaseIssues.VideoAlreadyExist;
       }
 
-      const path = `${destinationPath}/videos/${file.name}`;
+      let path = `${destinationPath}/videos/`;
+
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path, { recursive: true });
+      }
+
+      path = `${destinationPath}/texts/${file.name}`;
 
       file.mv(path, (e) => {
         if (e) {
