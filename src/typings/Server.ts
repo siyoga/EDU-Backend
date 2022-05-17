@@ -35,7 +35,8 @@ export default class Server {
   public async connectToDatabase(): Promise<void> {
     try {
       await this.database.authenticate();
-      console.log('Database is successfully authenticated');
+      await this.database.sync();
+      console.log('Database is successfully started.');
     } catch (e) {
       console.log(e);
     }

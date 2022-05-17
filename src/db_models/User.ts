@@ -6,6 +6,8 @@ export interface IUser extends Model {
   password: string;
   email: string;
   type: string;
+  courses: string[];
+  avatarPath: string;
 }
 
 export type UserModelType = typeof Model & {
@@ -46,6 +48,16 @@ export function getUser(sequelize: Sequelize): UserModelType {
       type: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+
+      courses: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+      },
+
+      avatarPath: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import AuthService from '../services/AuthService';
 import Controller from '../typings/Controller';
 
-import { getAuthHeader } from '../helper/auth';
+import { decodeToken, getAuthHeader } from '../helper/auth';
 import { HTTPMethods } from '../typings/Controller';
 
 import { ServerIssues } from '../output/errors';
@@ -109,8 +109,9 @@ export default class AuthController extends Controller {
         return;
       }
 
+      const decodedUserId = decodeToken(userId);
       const authService = new AuthService();
-      const data = await authService.logout(userId);
+      const data = await authService.logout(decodedUserId);
       if (!data.success) {
         super.error(response, data.message, data.statusCode);
       }

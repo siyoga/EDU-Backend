@@ -46,12 +46,6 @@ export default class CourseController extends Controller {
       method: HTTPMethods.DELETE,
       handler: this.handleDelete,
     },
-
-    {
-      path: '/student/add/:courseId',
-      method: HTTPMethods.GET,
-      handler: this.handleAddStudent,
-    },
   ];
 
   constructor() {
@@ -208,29 +202,6 @@ export default class CourseController extends Controller {
 
     const courseService = new CourseService();
     const data = await courseService.delete(courseId);
-
-    if (!data.success) {
-      super.error(response, data.message, data.statusCode);
-      return;
-    }
-
-    super.success(response, data.data!, data.message);
-  }
-
-  async handleAddStudent(request: Request, response: Response): Promise<void> {
-    const courseId = request.params.courseId;
-
-    if (courseId === undefined) {
-      super.error(
-        response,
-        ServerIssues.RequireFieldNotProvided.message,
-        ServerIssues.RequireFieldNotProvided.statusCode
-      );
-      return;
-    }
-
-    const courseService = new CourseService();
-    const data = await courseService.addStudent(courseId);
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);

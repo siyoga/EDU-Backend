@@ -13,6 +13,8 @@ interface IDatabase {
   Video: VideoModelType;
 }
 
+console.log(postgresConfig.host);
+
 const sequelize = new Sequelize(
   postgresConfig.database,
   postgresConfig.username,
@@ -40,11 +42,6 @@ const database: IDatabase = {
   Course,
   Video,
 };
-
-database.sequelize
-  .sync()
-  .then(() => console.log('Database synced'))
-  .catch((e) => console.log(e));
 
 export default database;
 export type UserModel = IUser;

@@ -11,7 +11,12 @@ import {
   SuccessRegister,
   SuccessTokenRefresh,
 } from '../output/success';
-import { ICryptToken, ISafeToken, ISafeUserData } from '../typings/index';
+import {
+  ICryptToken,
+  ISafeToken,
+  ISafeUser,
+  ISafeUserData,
+} from '../typings/index';
 import { accessToken } from '../../config';
 
 interface AuthData {
@@ -29,7 +34,7 @@ export default class AuthService {
       });
 
       if (loggedInUser === null) {
-        return DatabaseIssues.NoSuchUser;
+        return DatabaseIssues.InvalidCreds;
       }
 
       const passwordValid = await argon2.verify(
@@ -38,7 +43,7 @@ export default class AuthService {
       );
 
       if (!passwordValid) {
-        return DatabaseIssues.InvalidPassword;
+        return DatabaseIssues.InvalidCreds;
       }
 
       const data = await this.generateUserData(loggedInUser!);
@@ -57,10 +62,9 @@ export default class AuthService {
 
   public async logout(userId: string): Promise<AuthData> {
     try {
-      const decodedUserId = jwt.verify(userId, accessToken) as ICryptToken;
       await database.Token.destroy({
         where: {
-          userId: decodedUserId.userId,
+          userId: userId,
         },
       });
 
@@ -153,14 +157,13 @@ export default class AuthService {
 
   private async generateUserData(user: IUser): Promise<ISafeUserData> {
     const tokenPair = await this.generateTokenPair(user.id);
-
-    console.log(tokenPair);
-
     const data: ISafeUserData = {
       user: {
         username: user.username,
         email: user.email!,
         type: user.type,
+        courses: user.courses,
+        avatarPath: user.avatarPath,
       },
       tokenPair: tokenPair,
     };

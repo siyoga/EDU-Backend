@@ -2,6 +2,8 @@ export interface ISafeUser {
   username: string;
   email: string;
   type: string;
+  courses: string[];
+  avatarPath: string;
 }
 
 export interface ISafeUserData {

@@ -7,6 +7,7 @@ import {
   SuccessCourseDelete,
   SuccessCourseGet,
   SuccessCourseUpdate,
+  SuccessStudentEdited,
 } from '../output/success';
 import { ISafeCourseData } from '../typings';
 
@@ -201,11 +202,11 @@ export default class CourseService {
     }
   }
 
-  public async addStudent(id: string): Promise<CourseData> {
+  public async addStudent(courseId: string): Promise<CourseData> {
     try {
       const foundCourse = await database.Course.findOne({
         where: {
-          id: id,
+          id: courseId,
         },
       });
 
@@ -220,7 +221,39 @@ export default class CourseService {
 
       return {
         statusCode: 200,
-        message: SuccessCourseDelete.message,
+        message: SuccessStudentEdited.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerIssues.ServerError;
+    }
+  }
+
+  public async removeStudent(courseId: string): Promise<CourseData> {
+    try {
+      const foundCourse = await database.Course.findOne({
+        where: {
+          id: courseId,
+        },
+      });
+
+      if (foundCourse === null) {
+        return DatabaseIssues.CourseNotFound;
+      }
+
+      if (foundCourse.studentsCount > 0) {
+        foundCourse.studentsCount--;
+      }
+
+      await foundCourse.save();
+
+      const data = this.prepareResponse(foundCourse);
+
+      return {
+        statusCode: 200,
+        message: SuccessStudentEdited.message,
         success: true,
         data: data,
       };

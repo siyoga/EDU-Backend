@@ -39,9 +39,9 @@ export default class VideoService {
 
       const path = `${destinationPath}/videos/${file.name}`;
 
-      file.mv(path, (err) => {
-        if (err) {
-          return DatabaseIssues.VideoCannotBeUpload;
+      file.mv(path, (e) => {
+        if (e) {
+          return DatabaseIssues.FileCannotBeUpload;
         }
       });
 

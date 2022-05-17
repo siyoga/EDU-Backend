@@ -55,9 +55,9 @@ export const DatabaseIssues = {
     success: false,
   },
 
-  InvalidPassword: {
-    statusCode: 404,
-    message: 'Invalid password',
+  InvalidCreds: {
+    statusCode: 400,
+    message: 'Invalid username or password',
     success: false,
   },
 
@@ -86,6 +86,18 @@ export const DatabaseIssues = {
     success: false,
   },
 
+  CourseNotAvaliable: {
+    statusCode: 404,
+    message: 'This course not avaliable',
+    success: false,
+  },
+
+  CourseAlreadySub: {
+    statusCode: 400,
+    message: 'You are already subscribed to this course.',
+    success: false,
+  },
+
   // VIDEO
   VideoIsNotExist: {
     statusCode: 404,
@@ -99,9 +111,9 @@ export const DatabaseIssues = {
     success: false,
   },
 
-  VideoCannotBeUpload: {
+  FileCannotBeUpload: {
     statusCode: 409,
-    message: "Video can't be upload",
+    message: "File can't be upload",
     success: false,
   },
 };

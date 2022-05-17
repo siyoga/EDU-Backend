@@ -1,4 +1,6 @@
 import * as argon2 from 'argon2';
+import { UploadedFile } from 'express-fileupload';
+import { destinationPath } from '../../config';
 
 import database from '../db_models';
 
@@ -9,8 +11,12 @@ import {
   SuccessUserEmailUpdate,
   SuccessUserPasswordUpdate,
   SuccessUsernameUpdate,
+  SuccessAvatarUpdate,
+  SuccessSubscribe,
+  SuccessUnsubscribe,
 } from '../output/success';
-import { ISafeUserData } from '../typings';
+import { ISafeUserData, ISafeUser } from '../typings';
+import CourseService from './CourseService';
 
 interface UserData {
   statusCode: number;
@@ -20,6 +26,8 @@ interface UserData {
 }
 
 export default class UserService {
+  // GET
+
   public async get(userId: string): Promise<UserData> {
     try {
       const existUser = await database.User.findOne({
@@ -34,6 +42,47 @@ export default class UserService {
       return {
         statusCode: 200,
         message: SuccessGet.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerIssues.ServerError;
+    }
+  }
+
+  // UPDATE INFO
+
+  public async updateUserAvatar(
+    userId: string,
+    file: UploadedFile
+  ): Promise<UserData> {
+    try {
+      const existUser = await database.User.findOne({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (existUser === null) {
+        return DatabaseIssues.NoSuchUser;
+      }
+
+      const path = `${destinationPath}/avatars/${file.name}`;
+      file.mv(path, (e) => {
+        if (e) {
+          return DatabaseIssues.FileCannotBeUpload;
+        }
+      });
+
+      existUser.avatarPath = path;
+      await existUser.save();
+
+      const data = this.prepareResponse(existUser);
+
+      return {
+        statusCode: 200,
+        message: SuccessAvatarUpdate.message,
         success: true,
         data: data,
       };
@@ -121,7 +170,7 @@ export default class UserService {
       );
 
       if (!passwordValid) {
-        return DatabaseIssues.InvalidPassword;
+        return DatabaseIssues.InvalidCreds;
       }
 
       const hashedPassword = await argon2.hash(newPassword);
@@ -141,12 +190,102 @@ export default class UserService {
     }
   }
 
+  // COURSE CONTROL
+
+  public async subscribeOnCourse(
+    userId: string,
+    courseId: string
+  ): Promise<UserData> {
+    try {
+      const existUser = await database.User.findOne({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (existUser === null) {
+        return DatabaseIssues.NoSuchUser;
+      }
+
+      if (existUser.type === 'TEACHER') {
+        return DatabaseIssues.CourseNotAvaliable;
+      }
+
+      if (existUser.courses.indexOf(courseId) !== -1) {
+        return DatabaseIssues.CourseAlreadySub;
+      }
+
+      if (existUser.courses.length === 0 || existUser.courses === null) {
+        const courses: string[] = [courseId];
+        existUser.courses = courses;
+      } else {
+        existUser.courses.push(courseId);
+      }
+
+      await existUser.save();
+
+      const data = this.prepareResponse(existUser);
+
+      return {
+        statusCode: 200,
+        message: SuccessSubscribe.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerIssues.ServerError;
+    }
+  }
+
+  public async unsubscribeOnCourse(
+    userId: string,
+    courseId: string
+  ): Promise<UserData> {
+    try {
+      const existUser = await database.User.findOne({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (existUser === null) {
+        return DatabaseIssues.NoSuchUser;
+      }
+
+      if (existUser.courses.length === 1) {
+        existUser.courses = [];
+      } else {
+        const index = existUser.courses.indexOf(courseId);
+        console.log(index);
+        existUser.courses.splice(index, 1);
+      }
+
+      await existUser.save();
+
+      const data = this.prepareResponse(existUser);
+      return {
+        statusCode: 200,
+        message: SuccessUnsubscribe.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerIssues.ServerError;
+    }
+  }
+
+  // HELPER
+
   private prepareResponse(user: IUser): ISafeUserData {
     const data: ISafeUserData = {
       user: {
         username: user.username,
         email: user.email!,
         type: user.type,
+        courses: user.courses,
+        avatarPath: user.avatarPath,
       },
     };
 

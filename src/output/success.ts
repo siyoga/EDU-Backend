@@ -38,6 +38,10 @@ export const SuccessCourseDelete = {
   message: 'Course deleted successfully',
 };
 
+export const SuccessStudentEdited = {
+  message: 'Success student count edited',
+};
+
 export const SuccessUserEmailUpdate = {
   message: 'Email was successfully updated',
 };
@@ -64,4 +68,16 @@ export const SuccessVideoDelete = {
 
 export const SuccessVideoUpdate = {
   message: 'Video updated successfully',
+};
+
+export const SuccessAvatarUpdate = {
+  message: 'Avatar updated successfully',
+};
+
+export const SuccessSubscribe = {
+  message: 'Successfully subscribe',
+};
+
+export const SuccessUnsubscribe = {
+  message: 'Successfully unsubscribe',
 };
