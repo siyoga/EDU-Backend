@@ -38,3 +38,10 @@ export interface ISafeVideoData {
   lessonNumber: number;
   courseId: string;
 }
+
+export interface ISafeTextData {
+  name: string;
+  path: string;
+  lessonNumber: number;
+  courseId: string;
+}

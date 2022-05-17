@@ -10,6 +10,7 @@ import Server from './typings/Server';
 import database from './db_models';
 import CourseController from './controller/CourseController';
 import VideoController from './controller/VideoController';
+import TextController from './controller/TextController';
 import fileUpload from 'express-fileupload';
 
 const app: Application = express();
@@ -20,6 +21,7 @@ const controllers: Array<Controller> = [
   new UserController(),
   new CourseController(),
   new VideoController(),
+  new TextController(),
 ];
 const middlewares: Array<RequestHandler> = [
   json(),
