@@ -93,8 +93,8 @@ export default class UserController extends Controller {
     if (userId === undefined) {
       super.error(
         response,
-        ServerIssues.FilesNotProvided.message,
-        ServerIssues.FilesNotProvided.statusCode
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
       );
       return;
     }
