@@ -48,7 +48,7 @@ export const ServerIssues = {
 
   RangeHeadersRequire: {
     statusCode: 400,
-    message: 'Requires Range Headers',
+    message: 'Requires range headers',
     success: false,
   },
 };
