@@ -93,6 +93,33 @@ export default class CourseService {
     }
   }
 
+  public async getAllCourses(): Promise<CourseData> {
+    try {
+      const foundCourses = await database.Course.findAll();
+
+      if (foundCourses.length === 0) {
+        return DatabaseIssues.CourseNotFound;
+      }
+
+      const data: ISafeCourseData[] = [];
+
+      foundCourses.forEach((element) => {
+        const response = this.prepareResponse(element);
+        data.push(response);
+      });
+
+      return {
+        statusCode: 200,
+        message: SuccessCourseGet.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerIssues.ServerError;
+    }
+  }
+
   public async getByCourseId(courseId: string): Promise<CourseData> {
     try {
       const foundCourse = await database.Course.findOne({

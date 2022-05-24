@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import CourseService from '../services/CourseService';
 import Controller from '../typings/Controller';
 
-import { getAuthHeader } from '../helper/auth';
 import { HTTPMethods } from '../typings/Controller';
 
 import { ServerIssues } from '../output/errors';
@@ -21,6 +20,12 @@ export default class CourseController extends Controller {
       path: '/update',
       method: HTTPMethods.PATCH,
       handler: this.handleUpdate,
+    },
+
+    {
+      path: '/get/all',
+      method: HTTPMethods.GET,
+      handler: this.handleGetAllCourses,
     },
 
     {
@@ -107,6 +112,18 @@ export default class CourseController extends Controller {
 
     const courseService = new CourseService();
     const data = await courseService.update(courseId, newName, newDescription);
+
+    if (!data.success) {
+      super.error(response, data.message, data.statusCode);
+      return;
+    }
+
+    super.success(response, data.data!, data.message);
+  }
+
+  async handleGetAllCourses(request: Request, response: Response) {
+    const courseService = new CourseService();
+    const data = await courseService.getAllCourses();
 
     if (!data.success) {
       super.error(response, data.message, data.statusCode);
