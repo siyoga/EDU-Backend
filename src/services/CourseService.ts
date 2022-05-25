@@ -95,7 +95,9 @@ export default class CourseService {
 
   public async getAllCourses(): Promise<CourseData> {
     try {
-      const foundCourses = await database.Course.findAll();
+      const foundCourses = await database.Course.findAll({
+        order: [['studentsCount', 'DESC']],
+      });
 
       if (foundCourses.length === 0) {
         return DatabaseIssues.CourseNotFound;
@@ -152,6 +154,7 @@ export default class CourseService {
         where: {
           author: author,
         },
+        order: [['studentsCount', 'DESC']],
       });
 
       if (foundCourses === null) {
@@ -184,6 +187,7 @@ export default class CourseService {
               [Op.like]: `%${name}%`,
             },
           },
+          order: [['studentsCount', 'DESC']],
         },
       });
 
