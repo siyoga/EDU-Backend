@@ -152,7 +152,9 @@ export default class CourseService {
       const data: ISafeCourseData[] = [];
       const foundCourses = await database.Course.findAll({
         where: {
-          author: author,
+          author: {
+            [Op.iLike]: author,
+          },
         },
         order: [['studentsCount', 'DESC']],
       });
@@ -184,11 +186,11 @@ export default class CourseService {
         where: {
           name: {
             [Op.or]: {
-              [Op.like]: `%${name}%`,
+              [Op.iLike]: `%${name}%`,
             },
           },
-          order: [['studentsCount', 'DESC']],
         },
+        order: [['studentsCount', 'DESC']],
       });
 
       if (foundCourses === null) {
