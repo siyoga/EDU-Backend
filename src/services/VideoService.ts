@@ -44,7 +44,7 @@ export default class VideoService {
         fs.mkdirSync(path, { recursive: true });
       }
 
-      path = `${destinationPath}/texts/${file.name}`;
+      path = `${destinationPath}/videos/${file.name}`;
 
       file.mv(path, (e) => {
         if (e) {
