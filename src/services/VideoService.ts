@@ -17,7 +17,7 @@ interface VideoData {
   statusCode: number;
   message: string;
   success: boolean;
-  data?: ISafeVideoData;
+  data?: ISafeVideoData | ISafeVideoData[];
 }
 
 export default class VideoService {
@@ -87,6 +87,37 @@ export default class VideoService {
       }
 
       const data = this.prepareResponse(existVideo);
+
+      return {
+        statusCode: 200,
+        message: SuccessVideoGet.message,
+        success: true,
+        data: data,
+      };
+    } catch (e) {
+      console.log(e);
+      return ServerIssues.ServerError;
+    }
+  }
+
+  public async getAll(courseId: string): Promise<VideoData> {
+    try {
+      const existVideos = await database.Video.findAll({
+        where: {
+          cousrseId: courseId,
+        },
+      });
+
+      if (existVideos === null) {
+        return DatabaseIssues.VideoIsNotExist;
+      }
+
+      const data: ISafeVideoData[] = [];
+
+      existVideos.forEach((element) => {
+        const videoData = this.prepareResponse(element);
+        data.push(videoData);
+      });
 
       return {
         statusCode: 200,

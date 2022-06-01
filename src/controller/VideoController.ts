@@ -7,6 +7,7 @@ import Controller from '../typings/Controller';
 import VideoService from '../services/VideoService';
 
 import { ServerIssues } from '../output/errors';
+import { ISafeVideoData } from '../typings';
 
 export default class VideoController extends Controller {
   path = '/video';
@@ -21,6 +22,12 @@ export default class VideoController extends Controller {
       path: '/get/:courseId/:lessonNumber',
       method: HTTPMethods.GET,
       handler: this.handleGet,
+    },
+
+    {
+      path: '/all/get/:courseId',
+      method: HTTPMethods.GET,
+      handler: this.handleGetAll,
     },
 
     {
@@ -102,7 +109,8 @@ export default class VideoController extends Controller {
       return;
     }
 
-    const videoSize = fs.statSync(courseVideo.data!.path).size;
+    const videoData = courseVideo.data! as ISafeVideoData;
+    const videoSize = fs.statSync(videoData.path).size;
 
     const CHUNK_SIZE = 10 ** 6;
     const start = Number(rangeHeader.replace(/\D/g, ''));
@@ -116,12 +124,35 @@ export default class VideoController extends Controller {
       'Content-Type': 'video/mp4',
     };
 
-    const videoStream = fs.createReadStream(courseVideo.data!.path, {
+    const videoStream = fs.createReadStream(videoData.path, {
       start,
       end,
     });
 
     super.successStream(response, headers, videoStream);
+  }
+
+  async handleGetAll(request: Request, response: Response): Promise<void> {
+    const courseId = request.params.courseId;
+
+    if (courseId === undefined) {
+      super.error(
+        response,
+        ServerIssues.RequireFieldNotProvided.message,
+        ServerIssues.RequireFieldNotProvided.statusCode
+      );
+      return;
+    }
+
+    const videoService = new VideoService();
+    const videos = await videoService.getAll(courseId);
+
+    if (!videos.success) {
+      super.error(response, videos.message, videos.statusCode);
+      return;
+    }
+
+    super.success(response, videos, videos.message);
   }
 
   async handleDelete(request: Request, response: Response): Promise<void> {
@@ -137,15 +168,24 @@ export default class VideoController extends Controller {
     }
 
     const videoService = new VideoService();
-    const data = await videoService.delete(courseId, lessonNumber);
+    const deletedCourseVideo = await videoService.delete(
+      courseId,
+      lessonNumber
+    );
 
-    if (!data.success) {
-      super.error(response, data.message, data.statusCode);
+    if (!deletedCourseVideo.success) {
+      super.error(
+        response,
+        deletedCourseVideo.message,
+        deletedCourseVideo.statusCode
+      );
       return;
     }
 
-    fs.unlinkSync(data.data!.path);
-    super.success(response, data, data.message);
+    const videoData = deletedCourseVideo.data! as ISafeVideoData;
+
+    fs.unlinkSync(videoData.path);
+    super.success(response, deletedCourseVideo, deletedCourseVideo.message);
   }
 
   async handleUpdate(request: Request, response: Response): Promise<void> {

@@ -3,7 +3,7 @@ version: '3'
 services:
   nodejs:
     build:
-      context: .
+      context: './'
       dockerfile: Dockerfile
     image: node:16.15-alpine
     container_name: server
