@@ -104,7 +104,7 @@ export default class VideoService {
     try {
       const existVideos = await database.Video.findAll({
         where: {
-          cousrseId: courseId,
+          courseId: courseId,
         },
       });
 
