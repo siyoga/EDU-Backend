@@ -305,6 +305,7 @@ export default class CourseService {
       description: course.description,
       studentCount: course.studentsCount,
       author: course.author,
+      createdAt: course.createdAt,
     };
 
     return data;

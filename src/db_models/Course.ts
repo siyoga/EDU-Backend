@@ -6,6 +6,7 @@ export interface ICourse extends Model {
   description: string;
   author: string;
   studentsCount: number;
+  createdAt: string;
 }
 
 export type CourseModelType = typeof Model & {

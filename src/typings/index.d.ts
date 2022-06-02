@@ -30,6 +30,7 @@ export interface ISafeCourseData {
   description: string;
   studentCount: number;
   author: string;
+  createdAt: string;
 }
 
 export interface ISafeVideoData {
