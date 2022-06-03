@@ -219,14 +219,20 @@ export default class UserService {
         return DatabaseIssues.CourseNotAvaliable;
       }
 
-      if (existUser.courses.indexOf(courseId) !== -1) {
-        return DatabaseIssues.CourseAlreadySub;
-      }
-
-      if (existUser.courses.length === 0 || existUser.courses === null) {
+      if (existUser.courses === null) {
+        const courses: string[] = [courseId];
+        existUser.courses = courses;
+      } else if (existUser.courses.length === 0) {
+        const courses: string[] = [courseId];
+        existUser.courses = courses;
+      } else if (existUser.courses === []) {
         const courses: string[] = [courseId];
         existUser.courses = courses;
       } else {
+        if (existUser.courses.indexOf(courseId) !== -1) {
+          return DatabaseIssues.CourseAlreadySub;
+        }
+
         existUser.courses.push(courseId);
       }
 
